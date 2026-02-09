@@ -16,6 +16,6 @@ export const getFlagDisplay = (regionFlag: string, _publicInfo: PublicInfo | nul
  * @param regionFlag 地区旗帜 emoji
  * @returns 是否需要特殊处理
  */
-export const isSpecialRegion = (regionFlag: string): boolean => {
+export const isSpecialRegion = (_regionFlag: string): boolean => {
   return false;
 };
