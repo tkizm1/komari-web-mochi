@@ -64,17 +64,7 @@ loadWorldData();
 // 国家/地区名称映射（从emoji到国家名称）
 const emojiToCountryName: Record<string, string> = Object.entries(emojiToRegionMap).reduce((acc, [emoji, info]) => {
   // 特殊处理大中华区名称
-  if (emoji === '🇨🇳') {
-    acc[emoji] = 'China Mainland';
-  } else if (emoji === '🇭🇰') {
-    acc[emoji] = 'Hong Kong S.A.R., China';
-  } else if (emoji === '🇲🇴') {
-    acc[emoji] = 'Macau S.A.R., China';
-  } else if (emoji === '🇹🇼') {
-    acc[emoji] = 'Taiwan, Province of China';
-  } else {
-    acc[emoji] = info.en;
-  }
+  acc[emoji] = info.en;
   return acc;
 }, {} as Record<string, string>);
 
