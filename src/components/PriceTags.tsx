@@ -16,6 +16,8 @@ const PriceTags = ({
   currency?: string;
   tags?: string;
 } & React.ComponentProps<typeof Flex>) => {
+  const [t] = useTranslation();
+
   if (price == 0) {
     return (
       <Flex gap="1" {...props} wrap="wrap">
@@ -23,7 +25,6 @@ const PriceTags = ({
       </Flex>
     );
   }
-  const [t] = useTranslation();
 
   return (
     <Flex gap="1" {...props} wrap="wrap">

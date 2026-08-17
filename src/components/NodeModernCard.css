@@ -6,11 +6,14 @@
   will-change: auto;
   isolation: isolate;
   position: relative; /* 确保创建层叠上下文 */
+  min-width: 0;
 }
 
 /* 网格容器基础样式 */
 .modern-grid-container {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   overflow-x: hidden;
 }
@@ -29,7 +32,27 @@
   transform: translateZ(0); /* 开启硬件加速 */
   backface-visibility: hidden; /* 避免闪烁 */
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   box-sizing: border-box;
+}
+
+.modern-card:not(.modern-card-offline) {
+  border-color: color-mix(in srgb, var(--accent-6) 42%, var(--gray-a4)) !important;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-background) 94%, var(--accent-3)),
+      color-mix(in srgb, var(--color-background) 88%, var(--accent-2))
+    ) !important;
+}
+
+.modern-card-status-online {
+  background: linear-gradient(90deg, var(--green-9), var(--jade-9), var(--green-9));
+}
+
+.modern-card-status-offline {
+  background: var(--gray-9);
 }
 
 /* 优化 hover 效果 - 只使用 transform 和 opacity */
@@ -39,7 +62,8 @@
 
 .modern-card-hover:hover {
   transform: translateY(-2px) translateZ(0);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: color-mix(in srgb, var(--accent-8) 54%, var(--gray-a5)) !important;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.09);
 }
 
 /* 禁用 Firefox 下的 backdrop-filter */
@@ -94,7 +118,7 @@
 
 /* 减少阴影复杂度 */
 .modern-card-shadow {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.055);
 }
 
 /* 使用 CSS 变量缓存常用值 */
@@ -167,6 +191,94 @@
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.modern-metric-tile {
+  background: color-mix(in srgb, var(--color-background) 78%, var(--accent-2)) !important;
+  border-color: color-mix(in srgb, var(--accent-5) 54%, var(--gray-a4)) !important;
+  border-radius: 8px !important;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.modern-metric-tile:hover {
+  background: color-mix(in srgb, var(--color-background) 72%, var(--accent-3)) !important;
+  border-color: color-mix(in srgb, var(--accent-7) 56%, var(--gray-a5)) !important;
+}
+
+.modern-speed-row {
+  border: 1px solid transparent;
+  border-radius: 6px !important;
+}
+
+.modern-speed-up {
+  background: color-mix(in srgb, var(--green-a3) 42%, transparent) !important;
+  border-color: color-mix(in srgb, var(--green-a5) 58%, transparent);
+}
+
+.modern-speed-down {
+  background: color-mix(in srgb, var(--blue-a3) 38%, transparent) !important;
+  border-color: color-mix(in srgb, var(--blue-a5) 54%, transparent);
+}
+
+.modern-ping-panel {
+  border: 1px solid color-mix(in srgb, var(--accent-5) 55%, var(--gray-a4));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-background) 80%, var(--accent-2));
+  padding: 0.75rem;
+  min-height: 6.85rem;
+}
+
+.modern-ping-header {
+  margin-bottom: 0.625rem;
+}
+
+.modern-ping-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.modern-ping-metric {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--accent-5) 48%, var(--gray-a4));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-background) 88%, var(--accent-2));
+  padding: 0.5rem 0.625rem;
+}
+
+.modern-ping-panel.is-empty .modern-ping-metric {
+  background: color-mix(in srgb, var(--color-background) 92%, var(--gray-a2));
+}
+
+.modern-ping-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 24px;
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.modern-ping-bars span {
+  flex: 1 1 0;
+  min-width: 3px;
+  max-width: 7px;
+  height: 12px;
+  border-radius: 999px;
+  opacity: 0.9;
+  background: var(--accent-6);
+}
+
+.modern-ping-bars span.is-loading {
+  height: 12px;
+  background: linear-gradient(180deg, var(--gray-a6), var(--gray-a4));
+  opacity: 0.42;
+}
+
+@media (max-width: 520px) {
+  .modern-ping-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 
@@ -263,6 +375,8 @@
     padding: 0.75rem !important;
     overflow-x: hidden !important;
     box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
   
   /* 确保卡片在移动端有正确的初始尺寸 */

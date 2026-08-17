@@ -25,15 +25,15 @@ export const OnlineIndicator = () => {
   const { isOnline: isOnlineOnline } = usePWA();
   const { t: tOnline } = useTranslation();
   return (
-    <div className="flex items-center gap-1 text-xs text-gray-500">
+    <div className="flex items-center gap-1 text-xs" style={{ color: "var(--gray-11)" }}>
       {isOnlineOnline ? (
         <>
-          <Wifi size={12} className="text-green-500" />
+          <Wifi size={12} style={{ color: "var(--green-11)" }} />
           <span>{tOnline('nodeCard.online')}</span>
         </>
       ) : (
         <>
-          <WifiOff size={12} className="text-orange-500" />
+          <WifiOff size={12} style={{ color: "var(--amber-11)" }} />
           <span>{tOnline('nodeCard.offline')}</span>
         </>
       )}

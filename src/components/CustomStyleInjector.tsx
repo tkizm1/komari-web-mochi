@@ -158,7 +158,7 @@ export const CustomStyleInjector = () => {
         .footer,
         .rt-ScrollAreaViewport,
         .radix-themes {
-          color: #1a1a1a !important;
+          color: var(--gray-12) !important;
         }
 
         .dark body,
@@ -167,18 +167,18 @@ export const CustomStyleInjector = () => {
         .dark .footer,
         .dark .rt-ScrollAreaViewport,
         .dark .radix-themes {
-          color: #f0f0f0 !important;
+          color: var(--gray-12) !important;
         }
 
         /* StatusBar - 只设置基础文本颜色，不影响图标和内联样式 */
         .status-card > div > div > div > span:not([style*="color"]),
         .status-card > div > div > div > p:not([style*="color"]) {
-          color: #1a1a1a !important;
+          color: var(--gray-12) !important;
         }
 
         .dark .status-card > div > div > div > span:not([style*="color"]),
         .dark .status-card > div > div > div > p:not([style*="color"]) {
-          color: #f0f0f0 !important;
+          color: var(--gray-12) !important;
         }
 
         /* 导航栏标题文字 - 使用 Radix UI 主文本颜色 */
@@ -189,11 +189,6 @@ export const CustomStyleInjector = () => {
         /* 导航栏描述文字 - 使用 Radix UI accent 颜色 */
         .nav-bar > div > div > label {
           color: var(--accent-11) !important;
-        }
-
-        /* 保留所有内联样式颜色 */
-        [style*="color"] {
-          color: revert !important;
         }
 
         /* 按钮、图标按钮 - 使用 Radix UI 颜色变量 */
@@ -249,6 +244,29 @@ export const CustomStyleInjector = () => {
         /* Popover 内的次要文字 */
         .rt-PopoverContent .rt-Text[size="2"] {
           color: var(--gray-11) !important;
+        }
+
+        /* 下拉菜单（DropdownMenu）磨砂玻璃背景 - 与 dashboard 卡片同款 */
+        /* 菜单内容被 Radix portal 到 body 且自带 .radix-themes 类，
+           会被上面 .radix-themes { background: transparent } 强制透明，
+           这里用更高优先级选择器覆盖为与卡片一致的磨砂效果 */
+        .radix-themes.rt-DropdownMenuContent {
+          background-color: rgba(255, 255, 255, var(--custom-light-opacity)) !important;
+          backdrop-filter: blur(var(--custom-blur-strength));
+          -webkit-backdrop-filter: blur(var(--custom-blur-strength));
+          box-shadow: 0 0 var(--custom-glow-strength) rgba(0, 0, 0, 0.15);
+        }
+
+        /* 暗色模式：dark 类加在菜单元素自身上，需用同类选择器命中 */
+        .radix-themes.dark.rt-DropdownMenuContent {
+          background-color: rgba(30, 30, 30, var(--custom-dark-opacity)) !important;
+          box-shadow: 0 0 var(--custom-glow-strength) rgba(0, 0, 0, 0.3);
+        }
+
+        /* 下拉菜单内的文字使用 Radix UI 颜色，保证磨砂背景上可读 */
+        .radix-themes.rt-DropdownMenuContent,
+        .radix-themes.rt-DropdownMenuContent * {
+          color: var(--gray-12) !important;
         }
 
         /* Tooltip 弹出层保持不透明背景 - 修复颜色颠倒问题 */

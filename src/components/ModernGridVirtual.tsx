@@ -8,12 +8,14 @@ interface ModernGridVirtualProps {
   nodes: NodeBasicInfo[];
   liveData: LiveData;
   forceShowTrafficText?: boolean;
+  staggered?: boolean;
 }
 
 const ModernGridVirtual: React.FC<ModernGridVirtualProps> = ({ 
   nodes, 
   liveData, 
-  forceShowTrafficText 
+  forceShowTrafficText,
+  staggered = false
 }) => {
   const parentRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -212,12 +214,20 @@ const ModernGridVirtual: React.FC<ModernGridVirtualProps> = ({
                     contain: 'layout style paint',
                   }}
                 >
-                  {row.map((node) => {
+                  {row.map((node, columnIndex) => {
                     const isOnline = onlineNodes.includes(node.uuid);
                     const nodeData = liveData?.data?.[node.uuid];
+                    const itemIndex = virtualRow.index * columns + columnIndex;
                     
                     return (
-                      <div key={node.uuid} style={{ contain: 'layout style paint' }}>
+                      <div
+                        key={node.uuid}
+                        className={staggered ? "node-card-enter" : undefined}
+                        style={{
+                          contain: 'layout style paint',
+                          ["--node-enter-delay" as any]: `${Math.min(itemIndex, 18) * 28}ms`,
+                        }}
+                      >
                         <ModernCard
                           basic={node}
                           live={nodeData}

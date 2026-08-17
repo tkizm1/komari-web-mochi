@@ -24,12 +24,12 @@ const NavBar = () => {
           </Link>
           <div className="hidden flex-row items-end md:flex">
             <div
-              style={{ color: "var(--accent-3)" }}
+              style={{ color: "var(--accent-8)" }}
               className="border-solid border-r-2 mr-1 mb-1 w-2 h-2/3"
             />
             <label
               className="text-base font-bold"
-              style={{ color: "var(--accent-4)" }}
+              style={{ color: "var(--accent-11)" }}
             >
               Komari Monitor
             </label>

@@ -3,11 +3,12 @@
 /* ==================== LIGHT MODE (DEFAULT) ==================== */
 /* Default styles for light mode - transparent backgrounds */
 .view-mode-trigger {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  min-height: 42px;
+  background: color-mix(in srgb, var(--color-background) 86%, transparent);
+  border: 1px solid var(--gray-a4);
   border-radius: 8px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -16,8 +17,8 @@
 }
 
 .view-mode-trigger:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(0, 0, 0, 0.12);
+  background: color-mix(in srgb, var(--accent-a3) 55%, var(--color-background));
+  border-color: var(--gray-a5);
   transform: translateY(-1px);
 }
 
@@ -26,10 +27,10 @@
 }
 
 .view-mode-dropdown {
-  background: rgba(255, 255, 255, 0.95);
+  background: color-mix(in srgb, var(--color-panel-solid) 94%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--gray-a4);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   z-index: 9999;
 }
@@ -42,12 +43,12 @@
 }
 
 .view-mode-item:hover {
-  background: rgba(0, 0, 0, 0.03);
+  background: var(--gray-a3);
   transform: translateX(2px);
 }
 
 .view-mode-item[data-selected="true"] {
-  background: linear-gradient(90deg, rgba(96, 165, 250, 0.08) 0%, rgba(96, 165, 250, 0.04) 100%);
+  background: color-mix(in srgb, var(--accent-a3) 48%, transparent);
   border-left: 2px solid var(--accent-9);
   padding-left: calc(0.5rem - 2px);
 }
@@ -58,7 +59,7 @@
 }
 
 .view-mode-item[data-selected="true"]:hover {
-  background: linear-gradient(90deg, rgba(96, 165, 250, 0.12) 0%, rgba(96, 165, 250, 0.06) 100%);
+  background: color-mix(in srgb, var(--accent-a4) 52%, transparent);
 }
 
 .view-mode-check-wrapper {
@@ -68,7 +69,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: rgba(96, 165, 250, 0.15);
+  background: var(--accent-a3);
 }
 
 /* ==================== DARK MODE ==================== */
@@ -78,15 +79,15 @@
 .dark .view-mode-trigger,
 .dark-theme .view-mode-trigger,
 [class*="dark"] .view-mode-trigger {
-  background: rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--color-background) 82%, transparent);
+  border-color: var(--gray-a5);
 }
 
 .dark .view-mode-trigger:hover,
 .dark-theme .view-mode-trigger:hover,
 [class*="dark"] .view-mode-trigger:hover {
-  background: rgba(0, 0, 0, 0.4);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: color-mix(in srgb, var(--accent-a3) 45%, var(--color-background));
+  border-color: var(--gray-a6);
 }
 
 /* Method 2: Using Radix UI CSS variables to detect dark theme */
@@ -110,8 +111,8 @@
 [class*="dark"] .view-mode-dropdown,
 .theme-root.dark .view-mode-dropdown,
 .radix-themes.dark .view-mode-dropdown {
-  background: rgba(20, 20, 20, 0.98) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: var(--color-panel-solid) !important;
+  border-color: var(--gray-a5) !important;
 }
 
 .dark .view-mode-item:hover,
@@ -119,7 +120,7 @@
 [class*="dark"] .view-mode-item:hover,
 .theme-root.dark .view-mode-item:hover,
 .radix-themes.dark .view-mode-item:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
+  background: var(--gray-a3) !important;
 }
 
 .dark .view-mode-item[data-selected="true"],
@@ -127,8 +128,8 @@
 [class*="dark"] .view-mode-item[data-selected="true"],
 .theme-root.dark .view-mode-item[data-selected="true"],
 .radix-themes.dark .view-mode-item[data-selected="true"] {
-  background: linear-gradient(90deg, rgba(96, 165, 250, 0.15) 0%, rgba(96, 165, 250, 0.05) 100%) !important;
-  border-left: 2px solid rgb(96, 165, 250);
+  background: color-mix(in srgb, var(--accent-a4) 42%, transparent) !important;
+  border-left: 2px solid var(--accent-9);
 }
 
 .dark .view-mode-item[data-selected="true"] .view-mode-text,
@@ -136,7 +137,7 @@
 [class*="dark"] .view-mode-item[data-selected="true"] .view-mode-text,
 .theme-root.dark .view-mode-item[data-selected="true"] .view-mode-text,
 .radix-themes.dark .view-mode-item[data-selected="true"] .view-mode-text {
-  color: rgb(147, 197, 253);
+  color: var(--accent-11);
 }
 
 .dark .view-mode-item[data-selected="true"]:hover,
@@ -144,7 +145,7 @@
 [class*="dark"] .view-mode-item[data-selected="true"]:hover,
 .theme-root.dark .view-mode-item[data-selected="true"]:hover,
 .radix-themes.dark .view-mode-item[data-selected="true"]:hover {
-  background: linear-gradient(90deg, rgba(96, 165, 250, 0.2) 0%, rgba(96, 165, 250, 0.1) 100%) !important;
+  background: color-mix(in srgb, var(--accent-a5) 38%, transparent) !important;
 }
 
 .dark .view-mode-check-wrapper,
@@ -152,7 +153,7 @@
 [class*="dark"] .view-mode-check-wrapper,
 .theme-root.dark .view-mode-check-wrapper,
 .radix-themes.dark .view-mode-check-wrapper {
-  background: rgba(96, 165, 250, 0.2);
+  background: var(--accent-a4);
 }
 
 /* ==================== MOBILE RESPONSIVE ==================== */

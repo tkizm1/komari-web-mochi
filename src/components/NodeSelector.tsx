@@ -30,13 +30,7 @@ const NodeSelector: React.FC<NodeSelectorProps> = ({
   const { nodeDetail, isLoading, error } = useNodeDetails();
   const { t } = useTranslation();
   const [search, setSearch] = React.useState("");
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>{error}</div>;
-  }
+  const checkAllRef = useRef<HTMLButtonElement>(null);
 
   // 排序和搜索
   const filtered = [...nodeDetail]
@@ -53,13 +47,19 @@ const NodeSelector: React.FC<NodeSelectorProps> = ({
     (uuid) => !nodeDetail.some((node) => node.uuid === uuid)
   );
 
-  const checkAllRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (checkAllRef.current) {
-      // @ts-ignore
+      // @ts-expect-error Radix checkbox button exposes the indeterminate DOM property.
       checkAllRef.current.indeterminate = isIndeterminate;
     }
   }, [isIndeterminate]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   const handleCheckAll = (checked: boolean) => {
     if (checked) {
@@ -138,7 +138,7 @@ const NodeSelector: React.FC<NodeSelectorProps> = ({
         </Table>
       </div>
       {!hiddenDescription && (
-        <label className="text-sm text-gray-500">
+        <label className="text-sm" style={{ color: "var(--gray-11)" }}>
           {t("common.selected", { count: value.length })}
         </label>
       )}

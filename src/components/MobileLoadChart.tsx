@@ -40,37 +40,40 @@ export const MobileLoadChart: React.FC<MobileLoadChartProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 计算可用视图 - 固定显示：实时、1小时、6小时、24小时
-  const presetViews = [
-    { label: t("chart.hours", { count: 1 }), hours: 1 },
-    { label: t("chart.hours", { count: 6 }), hours: 6 },
-    { label: t("chart.days", { count: 1 }), hours: 24 },
-  ];
-  
-  const availableView: { label: string; hours?: number }[] = [
-    { label: t("common.real_time") },
-  ];
-  
-  if (typeof max_record_preserve_time === "number" && max_record_preserve_time > 0) {
-    // 添加预设视图
-    for (const v of presetViews) {
-      if (max_record_preserve_time >= v.hours) {
-        availableView.push({ label: v.label, hours: v.hours });
+  const memoizedAvailableView = useMemo(() => {
+    // 计算可用视图 - 固定显示：实时、1小时、6小时、24小时
+    const presetViews = [
+      { label: t("chart.hours", { count: 1 }), hours: 1 },
+      { label: t("chart.hours", { count: 6 }), hours: 6 },
+      { label: t("chart.days", { count: 1 }), hours: 24 },
+    ];
+
+    const availableView: { label: string; hours?: number }[] = [
+      { label: t("common.real_time") },
+    ];
+
+    if (typeof max_record_preserve_time === "number" && max_record_preserve_time > 0) {
+      // 添加预设视图
+      for (const v of presetViews) {
+        if (max_record_preserve_time >= v.hours) {
+          availableView.push({ label: v.label, hours: v.hours });
+        }
+      }
+
+      // 如果最大保存时间大于24小时且不在预设中，添加最大保存时间选项
+      if (
+        max_record_preserve_time > 24 &&
+        !presetViews.some(v => v.hours === max_record_preserve_time)
+      ) {
+        availableView.push({
+          label: t("chart.hours", { count: max_record_preserve_time }),
+          hours: max_record_preserve_time,
+        });
       }
     }
-    
-    // 如果最大保存时间大于24小时且不在预设中，添加最大保存时间选项
-    if (max_record_preserve_time > 24 && 
-        !presetViews.some(v => v.hours === max_record_preserve_time)) {
-      availableView.push({
-        label: t("chart.hours", { count: max_record_preserve_time }),
-        hours: max_record_preserve_time,
-      });
-    }
-  }
 
-  // 使用 useMemo 缓存 availableView 以避免无限循环
-  const memoizedAvailableView = useMemo(() => availableView, [max_record_preserve_time, t]);
+    return availableView;
+  }, [max_record_preserve_time, t]);
 
   // 使用 ref 来存储请求控制器
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -84,26 +87,32 @@ export const MobileLoadChart: React.FC<MobileLoadChartProps> = ({
 
     // 跳过实时视图的数据请求
     if (hoursView === t("common.real_time") || hoursView === "real-time") {
-      setRemoteData(null);
-      setLoading(false);
-      setError(null);
-      return;
+      const frame = requestAnimationFrame(() => {
+        setRemoteData(null);
+        setLoading(false);
+        setError(null);
+      });
+      return () => cancelAnimationFrame(frame);
     }
 
     const selected = memoizedAvailableView.find((v) => v.label === hoursView);
     if (!uuid || !selected || !selected.hours) {
-      setRemoteData(null);
-      setError(null);
-      setLoading(false);
-      return;
+      const frame = requestAnimationFrame(() => {
+        setRemoteData(null);
+        setError(null);
+        setLoading(false);
+      });
+      return () => cancelAnimationFrame(frame);
     }
     
     // 创建新的请求控制器
     const controller = new AbortController();
     abortControllerRef.current = controller;
     
-    setLoading(true);
-    setError(null);
+    const frame = requestAnimationFrame(() => {
+      setLoading(true);
+      setError(null);
+    });
     
     // 添加延迟以避免频繁请求
     const timeoutId = setTimeout(() => {
@@ -133,12 +142,13 @@ export const MobileLoadChart: React.FC<MobileLoadChartProps> = ({
 
     // 清理函数
     return () => {
+      cancelAnimationFrame(frame);
       clearTimeout(timeoutId);
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
     };
-  }, [hoursView, uuid, t]);
+  }, [hoursView, memoizedAvailableView, uuid, t]);
 
   // 处理图表数据
   const chartData = useMemo(() => {
@@ -235,7 +245,7 @@ export const MobileLoadChart: React.FC<MobileLoadChartProps> = ({
       value: liveData?.cpu?.usage ? `${liveData.cpu.usage.toFixed(1)}%` : "-",
       data: chartData,
       dataKey: "cpu",
-      color: "#F38181",
+      color: "var(--red-9)",
       formatter: (value: number) => `${value.toFixed(1)}%`,
       domain: [0, 100],
     },
@@ -249,7 +259,7 @@ export const MobileLoadChart: React.FC<MobileLoadChartProps> = ({
         ram: ((item.ram ?? 0) / (node?.mem_total ?? 1)) * 100,
       })),
       dataKey: "ram",
-      color: "#FCE38A",
+      color: "var(--amber-9)",
       formatter: (value: number) => `${value.toFixed(1)}%`,
       domain: [0, 100],
     },
@@ -260,7 +270,7 @@ export const MobileLoadChart: React.FC<MobileLoadChartProps> = ({
         : "-",
       data: chartData,
       dataKey: "disk",
-      color: "#95E1D3",
+      color: "var(--jade-9)",
       formatter: (value: number) => formatBytes(value),
       domain: [0, node?.disk_total || 100],
     },
@@ -274,7 +284,7 @@ export const MobileLoadChart: React.FC<MobileLoadChartProps> = ({
       ),
       data: chartData,
       dataKey: ["net_in", "net_out"],
-      color: ["#F38181", "#95E1D3"],
+      color: ["var(--red-9)", "var(--jade-9)"],
       formatter: (value: number) => `${formatBytes(value)}/s`,
       isMultiLine: true,
     },
@@ -335,7 +345,7 @@ export const MobileLoadChart: React.FC<MobileLoadChartProps> = ({
       )}
       
       {error && (
-        <div className="w-full h-40 flex items-center justify-center text-red-500">
+        <div className="w-full h-40 flex items-center justify-center" style={{ color: "var(--red-11)" }}>
           {error}
         </div>
       )}

@@ -5,11 +5,16 @@ type PingSummaryItem = {
   current: number | null;
   avg: number | null;
   loss: number | null;
+  samples: Array<number | null>;
 };
 
 type PingSummary = {
   items: PingSummaryItem[];
   loading: boolean;
+};
+
+type CachedPingSummary = PingSummary & {
+  cachedAt: number;
 };
 
 type PingRecord = {
@@ -36,15 +41,47 @@ const emptySummary: PingSummary = {
   loading: true,
 };
 
+const summaryCache = new Map<string, CachedPingSummary>();
+const CACHE_TTL_MS = 60_000;
+
 export function usePingSummary(uuid?: string, hours = 1) {
   const [summary, setSummary] = useState<PingSummary>(emptySummary);
 
   useEffect(() => {
-    if (!uuid) return;
-    let active = true;
+    if (!uuid) {
+      const frame = window.requestAnimationFrame(() => {
+        setSummary({ items: [], loading: false });
+      });
+      return () => window.cancelAnimationFrame(frame);
+    }
 
-    setSummary((prev) => ({ ...prev, loading: true }));
-    fetch(`/api/records/ping?uuid=${uuid}&hours=${hours}`)
+    let active = true;
+    const cacheKey = `${uuid}:${hours}`;
+    const cached = summaryCache.get(cacheKey);
+
+    if (cached && Date.now() - cached.cachedAt < CACHE_TTL_MS) {
+      const frame = window.requestAnimationFrame(() => {
+        if (active) {
+          setSummary({ items: cached.items, loading: false });
+        }
+      });
+
+      return () => {
+        active = false;
+        window.cancelAnimationFrame(frame);
+      };
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      if (active) {
+        setSummary((prev) => ({ ...prev, loading: true }));
+      }
+    });
+    const controller = new AbortController();
+
+    fetch(`/api/records/ping?uuid=${uuid}&hours=${hours}`, {
+      signal: controller.signal,
+    })
       .then((res) => res.json())
       .then((resp: PingApiResp) => {
         if (!active) return;
@@ -70,12 +107,19 @@ export function usePingSummary(uuid?: string, hours = 1) {
               loss: null,
             }));
 
-        setSummary({
+        const nextSummary = {
           items: resolvedTasks.map((task) => {
-            const taskRecords = sorted
-              .filter((rec) => rec.task_id === task.id)
+            const rawRecords = sorted.filter((rec) => rec.task_id === task.id);
+            const taskRecords = rawRecords
               .map((rec) => (rec.value === -1 ? null : rec.value))
               .filter((val): val is number => typeof val === "number" && Number.isFinite(val));
+            const samples = rawRecords
+              .slice(-24)
+              .map((rec) =>
+                rec.value === -1 || !Number.isFinite(rec.value)
+                  ? null
+                  : rec.value
+              );
 
             const current = taskRecords.length ? taskRecords[taskRecords.length - 1] : null;
             const avg = taskRecords.length
@@ -87,10 +131,13 @@ export function usePingSummary(uuid?: string, hours = 1) {
               current,
               avg,
               loss: task.loss,
+              samples,
             };
           }),
           loading: false,
-        });
+        };
+        summaryCache.set(cacheKey, { ...nextSummary, cachedAt: Date.now() });
+        setSummary(nextSummary);
       })
       .catch(() => {
         if (!active) return;
@@ -99,6 +146,8 @@ export function usePingSummary(uuid?: string, hours = 1) {
 
     return () => {
       active = false;
+      controller.abort();
+      window.cancelAnimationFrame(frame);
     };
   }, [uuid, hours]);
 

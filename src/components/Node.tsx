@@ -87,11 +87,12 @@ const Node = ({ basic, live, online }: NodeProps) => {
       style={{
         width: "100%",
         margin: "0 auto",
+        height: "100%",
         transition: "all 0.2s ease-in-out",
       }}
-      className={`node-card hover:cursor-pointer hover:shadow-lg hover:bg-accent-2 ${!online ? 'node-card-offline' : ''}`}
+      className={`node-card classic-node-card hover:cursor-pointer hover:shadow-lg hover:bg-accent-2 ${!online ? 'node-card-offline' : ''}`}
     >
-      <Flex direction="column" gap="2">
+      <Flex direction="column" gap="2" className="h-full">
         <Flex justify="between" align="center" my={isMobile ? "-1" : "0"}>
           <Flex justify="start" align="center">
             <Flag flag={basic.region} />
@@ -119,15 +120,6 @@ const Node = ({ basic, live, online }: NodeProps) => {
                         {formatUptime(liveData.uptime, t)}
                       </Text>
                     )}
-                    {!isMobile && (
-                      <PriceTags
-                        price={basic.price}
-                        billing_cycle={basic.billing_cycle}
-                        expired_at={basic.expired_at}
-                        currency={basic.currency}
-                        tags={basic.tags}
-                      />
-                    )}
                   </Flex>
                 </Link>
               );
@@ -144,7 +136,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
             })()}
           </Flex>
           <Flex gap="2" align="center">
-            {live?.message && <Tips color="#CE282E">{live.message}</Tips>}
+            {live?.message && <Tips color="var(--red-9)">{live.message}</Tips>}
             <Badge color={online ? "green" : "red"} variant="soft">
               {online ? t("nodeCard.online") : t("nodeCard.offline")}
             </Badge>
@@ -290,7 +282,7 @@ const Node = ({ basic, live, online }: NodeProps) => {
           </Flex>
         </Flex>
         <PriceTags
-          hidden={!isMobile}
+          className="classic-node-tags mt-auto pt-2"
           price={basic.price}
           billing_cycle={basic.billing_cycle}
           expired_at={basic.expired_at}
@@ -307,6 +299,7 @@ export default Node;
 type NodeGridProps = {
   nodes: NodeBasicInfo[];
   liveData: LiveData;
+  staggered?: boolean;
 };
 
 import { Box } from "@radix-ui/themes";
@@ -318,7 +311,7 @@ import PriceTags from "./PriceTags";
 import { getOSImage, getOSName } from "@/utils";
 import { getTrafficPercentage, getTrafficUsage } from "@/utils/formatHelper";
 
-export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
+export const NodeGrid = ({ nodes, liveData, staggered = false }: NodeGridProps) => {
   // 确保liveData是有效的
   const onlineNodes = liveData && liveData.online ? liveData.online : [];
 
@@ -334,18 +327,23 @@ export const NodeGrid = ({ nodes, liveData }: NodeGridProps) => {
         boxSizing: "border-box",
       }}
     >
-      {nodes.map((node) => {
+      {nodes.map((node, index) => {
         const isOnline = onlineNodes.includes(node.uuid);
         const nodeData =
           liveData && liveData.data ? liveData.data[node.uuid] : undefined;
 
         return (
-          <Node
+          <div
             key={node.uuid}
-            basic={node}
-            live={nodeData}
-            online={isOnline}
-          />
+            className={staggered ? "node-card-enter" : undefined}
+            style={{ ["--node-enter-delay" as any]: `${Math.min(index, 18) * 28}ms` }}
+          >
+            <Node
+              basic={node}
+              live={nodeData}
+              online={isOnline}
+            />
+          </div>
         );
       })}
     </Box>

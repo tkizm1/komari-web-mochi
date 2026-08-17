@@ -75,7 +75,10 @@
       "provider_fields_description": "设置您选择登录方式的详细信息"
     },
     "general": {
-      "title": "通用"
+      "title": "通用",
+      "auto_discovery": "自动发现",
+      "auto_discovery_key": "自动发现密钥",
+      "auto_discovery_key_description": "使用自动发现可以批量注册客户端，留空表示禁用自动发现。"
     },
     "site": {
       "name": "站点名称",
@@ -93,7 +96,16 @@
       "backup_restore": "恢复备份",
       "backup_restore_description": "从文件恢复备份，将覆盖当前数据。",
       "private_site": "私有站点",
-      "private_site_description": "将站点设置为私有，开启后数据都需要登陆后才能获取。"
+      "private_site_description": "将站点设置为私有，开启后数据都需要登陆后才能获取。",
+      "script_domain": "Agent 连接地址",
+      "script_domain_description": "为安装脚本定义面板的连接地址，方便多个域名的用户，并不会影响其他域名的访问。留空使用当前域名。",
+      "send_ip_addr_to_guest": "向访客显示部分IP地址",
+      "send_ip_addr_to_guest_description": "未登录的情况下可以通过 common:getNodes 查看部分IP地址信息，形如 9.*.*.* / fe80:*:*:*:*:*:*:*。用于部分主题展示IP。",
+      "tempory_share": "临时分享",
+      "tempory_share_current_link": "当前临时访问链接",
+      "tempory_share_description": "开启私有站点后，可以通过临时分享链接访问站点。",
+      "tempory_share_hours": "分享时长（小时）",
+      "tempory_share_revoke": "撤销访问许可"
     },
     "geoip": {
       "enable_title": "启用地理位置信息",
@@ -150,7 +162,14 @@
         "sender": "发件人邮箱",
         "receiver": "收件人邮箱",
         "use_ssl": "启用 SSL"
-      }
+      },
+      "Javascript": {
+        "script": "JavaScript 代码",
+        "script_help": "实现 sendMessage(message, title) 及可选的 sendEvent(event) 函数的 JavaScript 代码（部分支持 ES6）。两者均应返回 Promise 或布尔值。可用 API：fetch()、xhr()、console.log()。指南: https://komari-document.pages.dev/faq/notification-template.html"
+      },
+      "moved": "正在寻找过期通知？已经迁移到通知-通用",
+      "template": "消息通知模板",
+      "template_description": "Komari 将按照消息通知模板发送通知"
     },
     "record": {
       "title": "历史记录",
@@ -163,7 +182,22 @@
       "invalid_preserve_time": "无效的时间",
       "expected_usage": "保存一台服务器的数据预计需要{{space}}磁盘空间（Ping数据取决于设置的时间间隔）"
     },
-    "missing_required_fields": "请填写必填字段: {{fieldNames}}"
+    "missing_required_fields": "请填写必填字段: {{fieldNames}}",
+    "api": {
+      "description": "使用API密钥可以访问并操作所有资源，包括不限于远程控制、修改设置和账号密码等，请谨慎保管。留空表示取消API密钥功能。",
+      "key_length_error": "API 密钥长度至少为12",
+      "title": "API密钥"
+    },
+    "invalid_integer": "无效的整数",
+    "invalid_number": "无效的数字",
+    "nezha": {
+      "description": "哪吒的兼容选项，Komari 只能处理基础的监控，无法使用延迟检测、远程控制、NAT和内网穿透等功能。娱乐功能，后续无维护打算。（NTR爱好者）",
+      "enabled": "开启gRpc端口",
+      "enabled_description": "开启gRpc端口，随后哪吒 Agent 可以连接到 Komari, Nezha Agent将会自动注册。启动详情请查看日志。",
+      "listen": "gRpc监听地址",
+      "listen_description": "监听的gRpc地址",
+      "title": "哪吒"
+    }
   },
   "sessions": {
     "title": "会话管理",
@@ -189,6 +223,7 @@
   "current_online": "当前在线",
   "current_time": "当前时间",
   "region_overview": "点亮地区",
+  "asset_overview": "资产概览",
   "traffic_overview": "流量概览",
   "network_speed": "网络速率",
   "status_settings": "状态显示设置",
@@ -280,7 +315,11 @@
     "system_info": "系统信息",
     "hardware_info": "硬件信息",
     "network_info": "网络信息",
-    "runtime_info": "运行时信息"
+    "runtime_info": "运行时信息",
+    "temperature": "温度",
+    "uptime_days": "天",
+    "uptime_hours": "小时",
+    "uptime_minutes": "分钟"
   },
   "login": {
     "title": "登录",
@@ -320,6 +359,11 @@
     "mint": "薄荷色",
     "sky": "天蓝色"
   },
+  "modernCard": {
+    "pingStats": "延迟统计",
+    "latency": "延迟",
+    "loss": "丢包"
+  },
   "chart": {
     "cpu_usage": "CPU 使用率",
     "process": "进程数",
@@ -349,7 +393,17 @@
     "clickToShow": "点击显示",
     "clickToHide": "点击隐藏",
     "export": "保存图片",
-    "connectNulls": "连接空值"
+    "connectNulls": "连接空值",
+    "avg": "平均值",
+    "gpu_memory": "显存使用率",
+    "interval": "检测间隔",
+    "latest": "最新",
+    "max": "最大值",
+    "min": "最小值",
+    "total": "样本数量",
+    "type": "类型",
+    "usage": "使用率",
+    "volatility": "波动"
   },
   "Task Monitor": "任务监控",
   "Ping Tasks": "Ping 任务",
@@ -440,7 +494,9 @@
       "includeMountpoints": "只监测特定挂载点",
       "monthRotate": "网络统计月重置日",
       "autoRenewal": "自动续费",
-      "autoRenewalDescription": "如果服务器过期且当前在线，Komari 将自动将到期时间设置为下个自然月（年）"
+      "autoRenewalDescription": "如果服务器过期且当前在线，Komari 将自动将到期时间设置为下个自然月（年）",
+      "billingCycleTips": "<b>计费周期规则</b><br/> <br/> <b>按预设周期 (日历续费)</b><br/> 当输入的天数与预设方案（如月付、季付、年付）的数值相近时，将按对应的 <b>日历周期</b> 续费。<br/> - 常用数值: 30 (月), 92 (季), 365 (年), 730 (两年) 等。<br/> - 示例：输入 30，服务从3月15日续费，新的到期日为 4月15日。<br/> <br/> <b>按自定义天数</b><br/> 当输入其他天数时（如 7, 45, 100），将严格按 天数 续费。<br/> - 示例：输入 45，服务从3月15日续费，新的到期日为 4月29日 (45天后)。<br/> <br/> <b>一次性付费</b><br/> 输入 -1 表示一次性付费。",
+      "currencyTips": "¥-人民币，$-美元，€-欧元，£-英镑，₽-卢布，₣-法郎，₹-卢比，₫-越南盾，฿-泰铢"
     },
     "nodeDetail": {
       "machineDetail": "机器详细信息",
@@ -471,14 +527,28 @@
       "waiting": "等待...",
       "save": "保存",
       "saveSuccess": "保存成功",
-      "saveError": "保存失败"
+      "saveError": "保存失败",
+      "hidden": "隐藏节点",
+      "hidden_description": "在未登陆的情况下隐藏该节点",
+      "trafficLimit": "流量阈值",
+      "trafficLimit_description": "用于首页流量进度条，设置为 0 B 禁用。",
+      "trafficLimitType": "统计方式",
+      "trafficLimitType_down": "仅下载",
+      "trafficLimitType_max": "取最大",
+      "trafficLimitType_min": "取最小",
+      "trafficLimitType_sum": "总和",
+      "trafficLimitType_up": "仅上传"
     },
     "notification": {
       "expire_title": "过期提醒",
       "expire_enable": "是否启用过期提醒",
       "expire_enable_description": "启用后，Komari将在到期前发送提醒通知。",
       "expire_time": "提前多少天开始提醒",
-      "expire_time_description": "设置在到期前多少天开始发送提醒通知。"
+      "expire_time_description": "设置在到期前多少天开始发送提醒通知。",
+      "login": "登录通知",
+      "login_description": "当有新的会话登录到Komari时，向您发送通知",
+      "traffic": "流量用量",
+      "traffic_description": "Komari将会在服务器到达指定的流量使用百分比时发送通知，并以5%为梯度持续提醒。如果服务器没有设置流量阈值，不发送通知。设置为0禁用流量提醒。"
     }
   },
   "theme": {
@@ -511,7 +581,30 @@
     "delete_warning": "您确定要删除主题 \"{{themeName}}\" 吗？此操作不可撤销。",
     "author": "作者",
     "version": "版本",
-    "description": "描述"
+    "description": "描述",
+    "default_no_config": "默认主题没有可配置选项。",
+    "find_more": "查找更多主题？",
+    "github_description": "系统将从该GitHub仓库下载最新的发布版本。",
+    "github_owner": "GitHub用户名",
+    "github_owner_placeholder": "输入GitHub用户名/组织名",
+    "github_repo": "GitHub仓库",
+    "github_repo_placeholder": "输入GitHub仓库名称",
+    "manage": "主题管理",
+    "manage_with_name": "{{name}} 主题管理",
+    "no_config": "该主题没有声明配置项。",
+    "theme_link": "社区维护的主题",
+    "theme_url": "主题URL",
+    "update": "更新主题",
+    "update_description": "如果原主题URL无法访问，请上传主题包进行更新。",
+    "update_failed": "主题更新失败",
+    "update_mode": "更新模式",
+    "update_mode_auto": "自动（使用原始URL）",
+    "update_mode_auto_description": "系统将自动使用主题原始URL进行更新。如果原始URL是GitHub仓库地址，将自动下载最新的release包。",
+    "update_mode_github": "GitHub发布",
+    "update_mode_url": "直接URL",
+    "update_success": "主题更新成功",
+    "update_theme": "更新主题",
+    "uploda_413_content_too_large": "文件上传失败 (413)。请检查并增大您的反向代理服务器（如 Nginx/CDN）配置中的文件大小限制（client_max_body_size），确保该值大于您的目标文件大小。"
   },
   "copy_success": "已复制到剪贴板",
   "copy": "复制",
@@ -584,7 +677,14 @@
     "tags": "标签",
     "tagsDescription": "多个标签用';'分隔",
     "tagsTips": "多个标签使用\";\"隔开。</br> 如需指定颜色，请在标签末尾添加&ltcolor&gt，例如：1Gbps&ltgreen&gt。</br> 可用的颜色列表请参考：<label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color – Radix Themes</a></label>",
-    "private_site": "这是一个私有的Komari站点，请先登录。"
+    "private_site": "这是一个私有的Komari站点，请先登录。",
+    "day": "天",
+    "empty_error": "不能为空",
+    "generate": "生成",
+    "help": "帮助",
+    "home": "主页",
+    "quinquennial": "五年",
+    "update_available": "有新版本"
   },
   "earthView": {
     "allOnline": "全部在线",
@@ -618,7 +718,12 @@
     "title": "延迟监测",
     "target": "目标",
     "interval": "间隔",
-    "type": "类型"
+    "type": "类型",
+    "disk_usage_estimate": "预计需要磁盘空间",
+    "disk_usage_with_settings": "根据设置的 {{hour}} 小时保存时间，需要使用 {{space}} 磁盘空间。",
+    "server_view": "服务器视图",
+    "task": "任务",
+    "task_view": "任务视图"
   },
   "search": {
     "placeholder": "搜索节点名称、地区、系统...",
@@ -674,5 +779,42 @@
   },
   "statusBar": {
     "forceShowTrafficText": "Modern显示上下行流量"
-  }
+  },
+  "about": {
+    "ai": "Komari 项目的开发过程得到了人工智能工具的辅助。这些工具被用于执行代码生成、重构和调试等任务，以提高开发效率和代码质量。所有由 AI 生成的代码和建议都经过了人类开发者的审查与验证。",
+    "open_source": "Komari 基于 MIT 协议开源，并使用了以下开源软件构建：",
+    "open_source_title": "开源软件许可协议",
+    "readme_open_in_new_tab": "在新标签页中打开",
+    "title": "关于"
+  },
+  "exec": {
+    "allCompleted": "所有任务执行完成",
+    "command": "执行命令",
+    "commandPlaceholder": "whoami",
+    "description": "在选定的节点上远程执行命令",
+    "errors": {
+      "emptyCommand": "命令不能为空",
+      "executionFailed": "执行失败",
+      "noNodes": "请选择至少一个节点"
+    },
+    "execute": "执行命令",
+    "executing": "执行中...",
+    "pollingTimeout": "任务执行超时",
+    "results": "执行结果",
+    "selectedNodes": "已选择节点",
+    "selectNodes": "选择目标节点",
+    "status": {
+      "failed": "失败",
+      "running": "正在运行",
+      "success": "成功",
+      "timeout": "超时"
+    },
+    "success": "命令执行完成",
+    "taskStarted": "任务已启动",
+    "title": "远程执行"
+  },
+  "Theme": "主题",
+  "Color": "颜色",
+  "Language": "语言",
+  "Settings": "设置"
 }

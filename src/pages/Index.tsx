@@ -8,11 +8,19 @@ import Loading from "@/components/loading";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import StatusBar, { type StatusCardsVisibility } from "@/components/StatusBar";
 import "@/components/StatusBar.css";
+import { usePublicInfo } from "@/contexts/PublicInfoContext";
+
+const getDashboardMaxWidth = (value: unknown) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return undefined;
+  return `${Math.min(2560, Math.max(960, parsed))}px`;
+};
 
 
 const Index = () => {
   const InnerLayout = () => {
     const { live_data } = useLiveData();
+    const { publicInfo } = usePublicInfo();
     //document.title = t("home_title");
     //#region 节点数据
     const { nodeList, isLoading, error } = useNodeList();
@@ -31,6 +39,7 @@ const Index = () => {
       currentTime: true,
       currentOnline: true,
       regionOverview: true,
+      assetOverview: true,
       trafficOverview: true,
       networkSpeed: true
     });
@@ -39,6 +48,12 @@ const Index = () => {
     // 不使用 useMemo 以确保每次数据更新都重新计算
     let uploadTotal = 0;
     let downloadTotal = 0;
+    const cpuCoresTotal =
+      nodeList?.reduce((acc, node) => acc + (node.cpu_cores || 0), 0) ?? 0;
+    const memoryTotal =
+      nodeList?.reduce((acc, node) => acc + (node.mem_total || 0), 0) ?? 0;
+    const diskTotal =
+      nodeList?.reduce((acc, node) => acc + (node.disk_total || 0), 0) ?? 0;
     
     if (live_data?.data?.data) {
       const values = Object.values(live_data.data.data);
@@ -76,27 +91,35 @@ const Index = () => {
           }, {} as Record<string, number>)
         ).length
       : 0;
+    const dashboardMaxWidth = getDashboardMaxWidth(
+      publicInfo?.theme_settings?.dashboardMaxWidth
+    );
 
     return (
       <>
         <Callouts />
-        <StatusBar
-          currentTime={currentTime}
-          onlineCount={live_data?.data?.online.length ?? 0}
-          totalCount={nodeList?.length ?? 0}
-          regionCount={regionCount}
-          uploadTotal={uploadTotal}
-          downloadTotal={downloadTotal}
-          uploadSpeed={uploadSpeed}
-          downloadSpeed={downloadSpeed}
-          statusCardsVisibility={statusCardsVisibility}
-          onVisibilityChange={setStatusCardsVisibility}
-        />
-        <NodeDisplay
-          nodes={nodeList ?? []}
-          liveData={live_data?.data ?? { online: [], data: {} }}
-          forceShowTrafficText={statusCardsVisibility.forceShowTrafficText}
-        />
+        <div className="home-dashboard-shell" style={{ maxWidth: dashboardMaxWidth }}>
+          <StatusBar
+            currentTime={currentTime}
+            onlineCount={live_data?.data?.online.length ?? 0}
+            totalCount={nodeList?.length ?? 0}
+            regionCount={regionCount}
+            uploadTotal={uploadTotal}
+            downloadTotal={downloadTotal}
+            uploadSpeed={uploadSpeed}
+            downloadSpeed={downloadSpeed}
+            cpuCoresTotal={cpuCoresTotal}
+            memoryTotal={memoryTotal}
+            diskTotal={diskTotal}
+            statusCardsVisibility={statusCardsVisibility}
+            onVisibilityChange={setStatusCardsVisibility}
+          />
+          <NodeDisplay
+            nodes={nodeList ?? []}
+            liveData={live_data?.data ?? { online: [], data: {} }}
+            forceShowTrafficText={statusCardsVisibility.forceShowTrafficText}
+          />
+        </div>
       </>
     );
   };
@@ -109,8 +132,8 @@ const Callouts = () => {
   const { showCallout } = useLiveData();
   const ishttps = window.location.protocol === "https:";
   return (
-    <Flex direction="column" gap="2" className="m-2">
-      <Callout.Root m="2" hidden={ishttps} color="red">
+    <Flex direction="column" gap="2" className="dashboard-callouts m-2">
+      <Callout.Root hidden={ishttps} color="red">
         <Callout.Icon>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +152,7 @@ const Callouts = () => {
           </Text>
         </Callout.Text>
       </Callout.Root>
-      <Callout.Root m="2" hidden={showCallout} id="callout" color="tomato">
+      <Callout.Root hidden={showCallout} id="callout" color="tomato">
         <Callout.Icon>
           <svg
             xmlns="http://www.w3.org/2000/svg"

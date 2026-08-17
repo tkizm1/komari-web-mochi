@@ -58,10 +58,27 @@
       "provider": "單一登入提供商",
       "provider_description": "選擇用於單一登入的身份驗證提供商",
       "callback_url_tips": "回呼地址：{{url}}",
-      "provider_fields": "登入參數"
+      "provider_fields": "登入參數",
+      "generic": {
+        "auth_url": "授權 URL",
+        "client_id": "客戶端 ID",
+        "client_secret": "客戶端密鑰",
+        "scope": "作用域",
+        "token_url": "令牌 URL",
+        "user_id_field": "用戶 ID 欄位",
+        "user_info_url": "用戶信息 URL"
+      },
+      "github": {
+        "client_id": "GitHub 客戶端 ID",
+        "client_secret": "GitHub 客戶端密鑰"
+      },
+      "provider_fields_description": "設置您選擇登錄方式的詳細信息"
     },
     "general": {
-      "title": "通用"
+      "title": "通用",
+      "auto_discovery": "自動發現",
+      "auto_discovery_key": "自動發現密鑰",
+      "auto_discovery_key_description": "使用自動發現可以批量註冊客戶端，留空表示禁用自動發現。"
     },
     "site": {
       "name": "網站名稱",
@@ -79,7 +96,16 @@
       "backup_restore": "恢复备份",
       "backup_restore_description": "从文件恢复备份，将覆盖当前数据。",
       "private_site": "私有站點",
-      "private_site_description": "將站點設定為私有，開啟後資料都需要登入後才能取得。"
+      "private_site_description": "將站點設定為私有，開啟後資料都需要登入後才能取得。",
+      "script_domain": "Agent 連接地址",
+      "script_domain_description": "為安裝腳本定義面板的連接地址，方便多個域名的用戶，並不會影響其他域名的訪問。留空使用當前域名。",
+      "send_ip_addr_to_guest": "向訪客顯示部分IP地址",
+      "send_ip_addr_to_guest_description": "未登入的情況下可以透過 common:getNodes 查看部分IP地址資訊，形如 9.*.*.* / fe80:*:*:*:*:*:*:*。用於部分主題展示IP。",
+      "tempory_share": "臨時分享",
+      "tempory_share_current_link": "當前臨時訪問鏈接",
+      "tempory_share_description": "開啟私有站點後，可以通過臨時分享鏈接訪問站點。",
+      "tempory_share_hours": "分享時長（小時）",
+      "tempory_share_revoke": "撤銷訪問許可"
     },
     "geoip": {
       "enable_title": "啟用地理位置資訊",
@@ -121,7 +147,28 @@
       "smtp_receiver": "收件人郵箱",
       "smtp_ssl": "啟用 SSL",
       "smtp_tips": "請先測試執行 Komari 的伺服器 IP 是否能發送郵件，可使用 \"{{command}}\" 進行測試。",
-      "provider_fields": "通知參數"
+      "provider_fields": "通知參數",
+      "Javascript": {
+        "script": "JavaScript 代碼",
+        "script_help": "實現 sendMessage(message, title) 及可選的 sendEvent(event) 函數的 JavaScript 代碼（部分支持 ES6）。兩者均應返回 Promise 或布爾值。可用 API：fetch()、xhr()、console.log()。指南: https://komari-document.pages.dev/faq/notification-template.html"
+      },
+      "moved": "正在尋找過期通知？已經遷移到通知-通用",
+      "provider_fields_description": "詳細設置您選擇的信息發送渠道",
+      "telegram": {
+        "bot_token": "Telegram Bot Token",
+        "chat_id": "Chat ID",
+        "endpoint": "請求端點",
+        "endpoint_help": "Telegram Bot API 的請求端點，通常為 `https://api.telegram.org/bot`"
+      },
+      "template": "消息通知模板",
+      "template_description": "Komari 將按照消息通知模板發送通知",
+      "email.host": "SMTP 伺服器",
+      "email.password": "密碼",
+      "email.port": "端口",
+      "email.receiver": "收件人郵箱",
+      "email.sender": "發件人郵箱",
+      "email.use_ssl": "啟用 SSL",
+      "email.username": "用戶名"
     },
     "record": {
       "title": "歷史記錄",
@@ -134,7 +181,22 @@
       "invalid_preserve_time": "無效的時間",
       "expected_usage": "保存一台伺服器的資料預計需要{{space}}磁碟空間（Ping資料取決於設定的時間間隔）"
     },
-    "missing_required_fields": "請填寫必填欄位: {{fieldNames}}"
+    "missing_required_fields": "請填寫必填欄位: {{fieldNames}}",
+    "api": {
+      "description": "使用API密鑰可以訪問並操作所有資源，包括不限於遠程控制、修改設置和帳號密碼等，請謹慎保管。留空表示取消API密鑰功能。",
+      "key_length_error": "API 密鑰長度至少為12",
+      "title": "API密鑰"
+    },
+    "invalid_integer": "無效的整數",
+    "invalid_number": "無效的數字",
+    "nezha": {
+      "description": "哪吒的相容選項，Komari 只能處理基礎的監控，無法使用延遲檢測、遠端控制、NAT和內網穿透等功能。娛樂功能，後續無維護打算。（NTR愛好者）",
+      "enabled": "開啟gRpc端口",
+      "enabled_description": "開啟gRpc端口，隨後哪吒 Agent 可以連接到 Komari, Nezha Agent將會自動註冊。啟動詳情請查看日誌。",
+      "listen": "gRpc監聽地址",
+      "listen_description": "監聽的gRpc地址",
+      "title": "哪吒"
+    }
   },
   "sessions": {
     "title": "會話管理",
@@ -160,6 +222,7 @@
   "current_online": "當前線上",
   "current_time": "當前時間",
   "region_overview": "點亮地區",
+  "asset_overview": "資產概覽",
   "traffic_overview": "流量概覽",
   "network_speed": "網路速率",
   "status_settings": "狀態顯示設定",
@@ -250,7 +313,11 @@
     "system_info": "系統資訊",
     "hardware_info": "硬體資訊",
     "network_info": "網路資訊",
-    "runtime_info": "執行時資訊"
+    "runtime_info": "執行時資訊",
+    "temperature": "溫度",
+    "uptime_days": "天",
+    "uptime_hours": "小時",
+    "uptime_minutes": "分鐘"
   },
   "login": {
     "title": "登入",
@@ -290,6 +357,11 @@
     "mint": "薄荷色",
     "sky": "天藍色"
   },
+  "modernCard": {
+    "pingStats": "延遲統計",
+    "latency": "延遲",
+    "loss": "丟包"
+  },
   "chart": {
     "cpu_usage": "CPU 使用率",
     "process": "處理程序數",
@@ -319,7 +391,17 @@
     "clickToShow": "點擊顯示",
     "clickToHide": "點擊隱藏",
     "export": "保存圖片",
-    "connectNulls": "連接空值"
+    "connectNulls": "連接空值",
+    "avg": "平均值",
+    "gpu_memory": "顯存使用率",
+    "interval": "檢測間隔",
+    "latest": "最新",
+    "max": "最大值",
+    "min": "最小值",
+    "total": "樣本數量",
+    "type": "類型",
+    "usage": "使用率",
+    "volatility": "波動"
   },
   "Task Monitor": "任務監控",
   "Ping Tasks": "Ping 任務",
@@ -410,7 +492,9 @@
       "includeMountpoints": "只監測特定掛載點",
       "monthRotate": "網路統計月重置日",
       "autoRenewal": "自動續費",
-      "autoRenewalDescription": "如果伺服器過期且當前線上，Komari 將自動將到期時間設定為下個自然月（年）"
+      "autoRenewalDescription": "如果伺服器過期且當前線上，Komari 將自動將到期時間設定為下個自然月（年）",
+      "billingCycleTips": "<b>計費週期規則</b><br/> <br/> <b>按預設週期 (日曆續費)</b><br/> 當輸入的天數與預設方案（如月付、季付、年付）的數值相近時，將按對應的 <b>日曆週期</b> 續費。<br/> - 常用數值: 30 (月), 92 (季), 365 (年), 730 (兩年) 等。<br/> - 示例：輸入 30，服務從3月15日續費，新的到期日為 4月15日。<br/> <br/> <b>按自定義天數</b><br/> 當輸入其他天數時（如 7, 45, 100），將嚴格按 天數 續費。<br/> - 示例：輸入 45，服務從3月15日續費，新的到期日為 4月29日 (45天後)。<br/> <br/> <b>一次性付費</b><br/> 輸入 -1 表示一次性付費。",
+      "currencyTips": "¥-人民幣，$-美元，€-歐元，£-英鎊，₽-盧布，₣-法郎，₹-盧比，₫-越南盾，฿-泰銖"
     },
     "nodeDetail": {
       "machineDetail": "機器詳細資訊",
@@ -441,14 +525,28 @@
       "waiting": "等待...",
       "save": "儲存",
       "saveSuccess": "儲存成功",
-      "saveError": "儲存失敗"
+      "saveError": "儲存失敗",
+      "hidden": "隱藏節點",
+      "hidden_description": "在未登錄的情況下隱藏該節點",
+      "trafficLimit": "流量閾值",
+      "trafficLimit_description": "用於首頁流量進度條，設置為 0 B 禁用。",
+      "trafficLimitType": "統計方式",
+      "trafficLimitType_down": "僅下載",
+      "trafficLimitType_max": "取最大",
+      "trafficLimitType_min": "取最小",
+      "trafficLimitType_sum": "總和",
+      "trafficLimitType_up": "僅上傳"
     },
     "notification": {
       "expire_title": "過期提醒",
       "expire_enable": "是否啟用過期提醒",
       "expire_enable_description": "啟用後，Komari將在到期前發送提醒通知。",
       "expire_time": "提前多少天開始提醒",
-      "expire_time_description": "設定在到期前多少天開始發送提醒通知。"
+      "expire_time_description": "設定在到期前多少天開始發送提醒通知。",
+      "login": "登錄通知",
+      "login_description": "當有新的會話登錄到Komari時，向您發送通知",
+      "traffic": "流量用量",
+      "traffic_description": "Komari將會在伺服器到達指定的流量使用百分比時發送通知，並以5%為梯度持續提醒。如果伺服器沒有設定流量閾值，不發送通知。設定為0禁用流量提醒。"
     }
   },
   "theme": {
@@ -481,7 +579,30 @@
     "delete_warning": "您確定要刪除主題 \"{{themeName}}\" 嗎？此操作不可撤銷。",
     "author": "作者",
     "version": "版本",
-    "description": "描述"
+    "description": "描述",
+    "default_no_config": "默認主題沒有可配置選項。",
+    "find_more": "查找更多主題？",
+    "github_description": "系統將從該GitHub倉庫下載最新的發布版本。",
+    "github_owner": "GitHub用戶名",
+    "github_owner_placeholder": "輸入GitHub用戶名/組織名",
+    "github_repo": "GitHub倉庫",
+    "github_repo_placeholder": "輸入GitHub倉庫名稱",
+    "manage": "主題管理",
+    "manage_with_name": "{{name}} 主題管理",
+    "no_config": "該主題沒有聲明配置項。",
+    "theme_link": "社區維護的主題",
+    "theme_url": "主題URL",
+    "update": "更新主題",
+    "update_description": "如果原主題URL無法訪問，請上傳主題包進行更新。",
+    "update_failed": "主題更新失敗",
+    "update_mode": "更新模式",
+    "update_mode_auto": "自動（使用原始URL）",
+    "update_mode_auto_description": "系統將自動使用主題原始URL進行更新。如果原始URL是GitHub倉庫地址，將自動下載最新的release包。",
+    "update_mode_github": "GitHub發布",
+    "update_mode_url": "直接URL",
+    "update_success": "主題更新成功",
+    "update_theme": "更新主題",
+    "uploda_413_content_too_large": "文件上傳失敗 (413)。請檢查並增大您的反向代理伺服器（如 Nginx/CDN）配置中的檔案大小限制（client_max_body_size），確保該值大於您的目標檔案大小。"
   },
   "copy_success": "已複製到剪貼簿",
   "copy": "複製",
@@ -554,7 +675,14 @@
     "tags": "標籤",
     "tagsDescription": "多個標籤用';'分隔",
     "tagsTips": "多個標籤使用\";\"隔開。</br> 如需指定顏色，請在標籤末尾新增&ltcolor&gt，例如：1Gbps&ltgreen&gt。</br> 可用的顏色列表請參考：<label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color – Radix Themes</a></label>",
-    "private_site": "這是一個私有的Komari站點，請先登入。"
+    "private_site": "這是一個私有的Komari站點，請先登入。",
+    "day": "天",
+    "empty_error": "不能为空",
+    "generate": "生成",
+    "help": "幫助",
+    "home": "主頁",
+    "quinquennial": "五年",
+    "update_available": "有新版本"
   },
   "earthView": {
     "allOnline": "全部在線",
@@ -588,7 +716,12 @@
     "title": "延遲監測",
     "target": "目標",
     "interval": "間隔",
-    "type": "類型"
+    "type": "類型",
+    "disk_usage_estimate": "預計需要磁碟空間",
+    "disk_usage_with_settings": "根據設定的 {{hour}} 小時保存時間，需要使用 {{space}} 磁碟空間。",
+    "server_view": "伺服器視圖",
+    "task": "任務",
+    "task_view": "任務視圖"
   },
   "search": {
     "placeholder": "搜尋節點名稱、地區、系統...",
@@ -644,5 +777,42 @@
   },
   "statusBar": {
     "forceShowTrafficText": "Modern顯示上下行流量"
-  }
+  },
+  "about": {
+    "ai": "Komari 專案的開發過程得到了人工智慧工具的輔助。這些工具被用於執行程式碼生成、重構和除錯等任務，以提高開發效率和程式碼品質。所有由 AI 生成的程式碼和建議都經過了人類開發者的審查與驗證。",
+    "open_source": "Komari 基於 MIT 協議開源，並使用了以下開源軟體構建：",
+    "open_source_title": "開源軟體許可協議",
+    "readme_open_in_new_tab": "在新標籤頁中打開",
+    "title": "關於"
+  },
+  "exec": {
+    "allCompleted": "所有任務執行完成",
+    "command": "執行命令",
+    "commandPlaceholder": "whoami",
+    "description": "在選定的節點上遠程執行命令",
+    "errors": {
+      "emptyCommand": "命令不能為空",
+      "executionFailed": "執行失敗",
+      "noNodes": "請至少選擇一個節點"
+    },
+    "execute": "執行命令",
+    "executing": "執行中...",
+    "pollingTimeout": "任務執行超時",
+    "results": "執行結果",
+    "selectedNodes": "已選擇節點",
+    "selectNodes": "選擇目標節點",
+    "status": {
+      "failed": "失敗",
+      "running": "正在運行",
+      "success": "成功",
+      "timeout": "超時"
+    },
+    "success": "命令執行完成",
+    "taskStarted": "任務已啟動",
+    "title": "遠程執行"
+  },
+  "Theme": "主題",
+  "Color": "顏色",
+  "Language": "語言",
+  "Settings": "設定"
 }

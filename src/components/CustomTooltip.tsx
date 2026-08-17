@@ -21,25 +21,25 @@ export const CustomTooltip: React.FC<TooltipData> = ({ label, datasets, lossRate
 
   // 判断延迟状态
   const getLatencyStatus = (value: number | null) => {
-    if (value === null) return { color: '#666', icon: AlertCircle, text: '无数据' };
-    if (value < 50) return { color: '#10B981', icon: TrendingDown, text: '优秀' };
-    if (value < 100) return { color: '#F59E0B', icon: TrendingUp, text: '良好' };
-    return { color: '#EF4444', icon: AlertCircle, text: '较差' };
+    if (value === null) return { color: 'var(--gray-10)', icon: AlertCircle, text: '无数据' };
+    if (value < 50) return { color: 'var(--green-11)', icon: TrendingDown, text: '优秀' };
+    if (value < 100) return { color: 'var(--amber-11)', icon: TrendingUp, text: '良好' };
+    return { color: 'var(--red-11)', icon: AlertCircle, text: '较差' };
   };
 
-  // 使用纯色背景,确保最佳兼容性
   const cardStyle = {
     minWidth: '280px',
-    background: 'rgba(255, 255, 255, 0.98)',
-    border: '1px solid rgba(0, 0, 0, 0.1)',
+    background: 'var(--color-panel-solid)',
+    border: '1px solid var(--gray-a5)',
+    color: 'var(--gray-12)',
   };
 
   return (
-    <Card className="p-3 shadow-xl border border-gray-200" style={cardStyle}>
+    <Card className="p-3 shadow-xl" style={cardStyle}>
       {/* 时间标题 */}
-      <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
-        <Clock size={14} className="text-gray-500" />
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+      <div className="flex items-center gap-2 mb-3 pb-2" style={{ borderBottom: "1px solid var(--gray-a4)" }}>
+        <Clock size={14} style={{ color: "var(--gray-10)" }} />
+        <span className="text-sm font-medium" style={{ color: "var(--gray-12)" }}>{label}</span>
       </div>
 
       {/* 数据项列表 */}
@@ -53,7 +53,7 @@ export const CustomTooltip: React.FC<TooltipData> = ({ label, datasets, lossRate
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: dataset.color }}
                 />
-                <span className="text-sm text-gray-600">{dataset.label}</span>
+                <span className="text-sm" style={{ color: "var(--gray-11)" }}>{dataset.label}</span>
               </div>
               <div className="flex items-center gap-2">
                 <status.icon size={14} style={{ color: status.color }} />
@@ -68,8 +68,8 @@ export const CustomTooltip: React.FC<TooltipData> = ({ label, datasets, lossRate
 
       {/* 统计信息 */}
       {(avgLatency !== null || lossRate !== undefined) && (
-        <div className="mt-3 pt-2 border-t border-gray-100">
-          <div className="flex justify-between text-xs text-gray-500">
+        <div className="mt-3 pt-2" style={{ borderTop: "1px solid var(--gray-a4)" }}>
+          <div className="flex justify-between text-xs" style={{ color: "var(--gray-10)" }}>
             {avgLatency !== null && (
               <div className="flex items-center gap-1">
                 <Activity size={12} />

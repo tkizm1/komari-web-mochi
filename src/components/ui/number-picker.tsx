@@ -25,8 +25,11 @@ export default function NumberPicker({
   useEffect(() => {
     if (defaultValue === undefined) return;
     const numValue = Math.max(min, Math.min(max, defaultValue));
-    setValue(String(numValue));
-    onChange(numValue);
+    const frame = requestAnimationFrame(() => {
+      setValue(String(numValue));
+      onChange(numValue);
+    });
+    return () => cancelAnimationFrame(frame);
   }, [defaultValue, min, max, onChange]);
 
   const handleChange = (newValue: number) => {

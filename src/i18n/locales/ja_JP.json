@@ -75,7 +75,10 @@
       "provider_fields_description": "選択したログイン方式の詳細情報を設定"
     },
     "general": {
-      "title": "一般"
+      "title": "一般",
+      "auto_discovery": "自動検出",
+      "auto_discovery_key": "自動検出キー",
+      "auto_discovery_key_description": "自動検出を使用すると、クライアントを一括登録できます。空白の場合、自動検出は無効になります。"
     },
     "site": {
       "name": "サイト名",
@@ -93,7 +96,16 @@
       "backup_restore": "バックアップを復元",
       "backup_restore_description": "ファイルからバックアップを復元すると、現在のデータが上書きされます。",
       "private_site": "プライベートサイト",
-      "private_site_description": "サイトをプライベートに設定します。有効にすると、ログイン後のみデータにアクセスできます。"
+      "private_site_description": "サイトをプライベートに設定します。有効にすると、ログイン後のみデータにアクセスできます。",
+      "script_domain": "エージェント接続アドレス",
+      "script_domain_description": "インストールスクリプトの接続アドレスを定義します。複数のドメインのユーザーに便利で、他のドメインのアクセスには影響しません。空白の場合は現在のドメインを使用します。",
+      "send_ip_addr_to_guest": "ゲストに一部のIPアドレスを表示",
+      "send_ip_addr_to_guest_description": "未ログインの場合、common:getNodesを通じて一部のIPアドレス情報を確認できます。形式は9.*.*.* / fe80:*:*:*:*:*:*:*です。特定のテーマでIPを表示するために使用されます。",
+      "tempory_share": "一時的な共有",
+      "tempory_share_current_link": "現在の一時的なアクセスリンク",
+      "tempory_share_description": "プライベートサイトを有効にすると、一時的な共有リンクを通じてサイトにアクセスできます。",
+      "tempory_share_hours": "共有時間（時間）",
+      "tempory_share_revoke": "アクセス許可を取り消す"
     },
     "geoip": {
       "enable_title": "GeoIPを有効にする",
@@ -150,7 +162,14 @@
         "sender": "送信者メールアドレス",
         "receiver": "受信者メールアドレス",
         "use_ssl": "SSLを有効にする"
-      }
+      },
+      "Javascript": {
+        "script": "JavaScript コード",
+        "script_help": "sendMessage(message, title) およびオプションの sendEvent(event) 関数を実装する JavaScript コード（ES6 の一部をサポート）。両方とも Promise またはブール値を返す必要があります。使用可能な API：fetch()、xhr()、console.log()。ガイド: https://komari-document.pages.dev/faq/notification-template.html"
+      },
+      "moved": "期限切れの通知を探していますか？通知-一般に移行されました",
+      "template": "メッセージ通知テンプレート",
+      "template_description": "Komariはメッセージ通知テンプレートに従って通知を送信します"
     },
     "record": {
       "title": "履歴記録",
@@ -163,7 +182,22 @@
       "invalid_preserve_time": "無効な時間",
       "expected_usage": "1台のサーバーのデータを保存するには約{{space}}のディスク容量が必要です（Pingデータは設定された時間間隔に依存します）"
     },
-    "missing_required_fields": "必須フィールドを入力してください: {{fieldNames}}"
+    "missing_required_fields": "必須フィールドを入力してください: {{fieldNames}}",
+    "api": {
+      "description": "API キーを使用すると、リモートコントロール、設定の変更、アカウントパスワードなど、すべてのリソースにアクセスして操作できます。慎重に保管してください。空白にすると API キー機能が無効になります。",
+      "key_length_error": "API キーの長さは最低 12 文字です",
+      "title": "API キー"
+    },
+    "invalid_integer": "無効な整数",
+    "invalid_number": "無効な数字",
+    "nezha": {
+      "description": "哪吒の互換オプション、Komari は基本的な監視のみを処理でき、遅延検出、リモートコントロール、NAT および内部ネットワークの貫通などの機能は使用できません。エンターテインメント機能は、今後のメンテナンスの予定はありません。（NTR愛好者）",
+      "enabled": "gRpc ポートを有効にする",
+      "enabled_description": "gRpc ポートを有効にすると、哪吒エージェントが Komari に接続でき、Nezha エージェントが自動的に登録されます。起動の詳細はログを確認してください。",
+      "listen": "gRpc リスニングアドレス",
+      "listen_description": "リスニングする gRpc アドレス",
+      "title": "哪吒"
+    }
   },
   "sessions": {
     "title": "セッション管理",
@@ -189,6 +223,7 @@
   "current_online": "オンライン状況",
   "current_time": "現在時刻",
   "region_overview": "アクティブ地域",
+  "asset_overview": "資産概要",
   "traffic_overview": "トラフィック概要",
   "network_speed": "ネットワーク速度",
   "status_settings": "ステータス表示設定",
@@ -280,7 +315,11 @@
     "system_info": "システム情報",
     "hardware_info": "ハードウェア情報",
     "network_info": "ネットワーク情報",
-    "runtime_info": "ランタイム情報"
+    "runtime_info": "ランタイム情報",
+    "temperature": "温度",
+    "uptime_days": "日",
+    "uptime_hours": "時間",
+    "uptime_minutes": "分"
   },
   "login": {
     "title": "ログイン",
@@ -320,6 +359,11 @@
     "mint": "ミント",
     "sky": "スカイ"
   },
+  "modernCard": {
+    "pingStats": "Ping 統計",
+    "latency": "レイテンシ",
+    "loss": "損失"
+  },
   "chart": {
     "cpu_usage": "CPU使用率",
     "process": "プロセス数",
@@ -349,7 +393,17 @@
     "clickToShow": "クリックして表示",
     "clickToHide": "クリックして非表示",
     "export": "画像を保存",
-    "connectNulls": "ヌル値を接続"
+    "connectNulls": "ヌル値を接続",
+    "avg": "平均値",
+    "gpu_memory": "GPU メモリ使用率",
+    "interval": "検出間隔",
+    "latest": "最新",
+    "max": "最大値",
+    "min": "最小値",
+    "total": "サンプル数",
+    "type": "タイプ",
+    "usage": "使用率",
+    "volatility": "変動"
   },
   "Task Monitor": "タスクモニター",
   "Ping Tasks": "Pingタスク",
@@ -440,7 +494,9 @@
       "includeMountpoints": "特定のマウントポイントのみ監視",
       "monthRotate": "ネットワーク統計月間リセット日",
       "autoRenewal": "自動更新",
-      "autoRenewalDescription": "サーバーが期限切れで現在オンラインの場合、Komariは自動的に有効期限を次の自然月（年）に設定します"
+      "autoRenewalDescription": "サーバーが期限切れで現在オンラインの場合、Komariは自動的に有効期限を次の自然月（年）に設定します",
+      "billingCycleTips": "<b>請求サイクルのルール</b><br/> <br/> <b>設定されたサイクルに従う（カレンダー更新）</b><br/> 入力された日数が設定プラン（例：月払い、四半期払い、年払い）の数値に近い場合、対応する <b>カレンダーサイクル</b> に従って更新されます。<br/> - よく使われる数値: 30（1ヶ月）、92（四半期）、365（1年）、730（2年）など。<br/> - 例：30を入力すると、サービスは3月15日に更新され、新しい期限日は4月15日になります。<br/> <br/> <b>カスタム日数に従う</b><br/> 他の日数（例：7、45、100）を入力すると、厳密に日数に従って更新されます。<br/> - 例：45を入力すると、サービスは3月15日に更新され、新しい期限日は4月29日（45日後）になります。<br/> <br/> <b>一括払い</b><br/> -1を入力すると、一括払いを意味します。",
+      "currencyTips": "¥-人民元、$-米ドル、€-ユーロ、£-ポンド、₽-ルーブル、₣-フラン、₹-ルピー、₫-ベトナムドン、฿-バーツ"
     },
     "nodeDetail": {
       "machineDetail": "マシン詳細情報",
@@ -471,14 +527,28 @@
       "waiting": "待機中...",
       "save": "保存",
       "saveSuccess": "保存に成功しました",
-      "saveError": "保存に失敗しました"
+      "saveError": "保存に失敗しました",
+      "hidden": "ノードを隠す",
+      "hidden_description": "未ログインの状態でこのノードを隠す",
+      "trafficLimit": "トラフィック制限",
+      "trafficLimit_description": "ホームページのトラフィック進捗バーに使用され、0 Bに設定すると無効になります。",
+      "trafficLimitType": "統計方法",
+      "trafficLimitType_down": "ダウンロードのみ",
+      "trafficLimitType_max": "最大値を取る",
+      "trafficLimitType_min": "最小値を取る",
+      "trafficLimitType_sum": "合計",
+      "trafficLimitType_up": "アップロードのみ"
     },
     "notification": {
       "expire_title": "有効期限リマインダー",
       "expire_enable": "有効期限リマインダーを有効にする",
       "expire_enable_description": "有効にすると、Komariは有効期限前にリマインダー通知を送信します。",
       "expire_time": "何日前からリマインドを開始",
-      "expire_time_description": "有効期限の何日前からリマインダー通知を送信するかを設定します。"
+      "expire_time_description": "有効期限の何日前からリマインダー通知を送信するかを設定します。",
+      "login": "ログイン通知",
+      "login_description": "新しいセッションがKomariにログインしたときに通知を送信します。",
+      "traffic": "トラフィック使用量",
+      "traffic_description": "Komariは、サーバーが指定されたトラフィック使用率に達したときに通知を送信し、5%の間隔で継続的にリマインダーを表示します。サーバーにトラフィック閾値が設定されていない場合、通知は送信されません。0に設定するとトラフィックリマインダーが無効になります。"
     }
   },
   "theme": {
@@ -511,7 +581,30 @@
     "delete_warning": "テーマ「{{themeName}}」を削除してもよろしいですか？この操作は元に戻せません。",
     "author": "作者",
     "version": "バージョン",
-    "description": "説明"
+    "description": "説明",
+    "default_no_config": "デフォルトテーマには設定オプションがありません。",
+    "find_more": "他のテーマを探しますか？",
+    "github_description": "システムはこのGitHubリポジトリから最新のリリースバージョンをダウンロードします。",
+    "github_owner": "GitHubユーザー名",
+    "github_owner_placeholder": "GitHubユーザー名/組織名を入力",
+    "github_repo": "GitHubリポジトリ",
+    "github_repo_placeholder": "GitHubリポジトリ名を入力",
+    "manage": "テーマ管理",
+    "manage_with_name": "{{name}} テーマ管理",
+    "no_config": "このテーマには設定項目が宣言されていません。",
+    "theme_link": "コミュニティが管理するテーマ",
+    "theme_url": "テーマURL",
+    "update": "テーマを更新",
+    "update_description": "元のテーマURLにアクセスできない場合は、テーマパッケージをアップロードして更新します。",
+    "update_failed": "テーマの更新に失敗しました",
+    "update_mode": "更新モード",
+    "update_mode_auto": "自動（元のURLを使用）",
+    "update_mode_auto_description": "システムは自動的にテーマの元のURLを使用して更新します。元のURLがGitHubリポジトリのアドレスである場合、最新のリリースパッケージが自動的にダウンロードされます。",
+    "update_mode_github": "GitHubリリース",
+    "update_mode_url": "直接URL",
+    "update_success": "テーマの更新に成功しました",
+    "update_theme": "テーマを更新",
+    "uploda_413_content_too_large": "ファイルのアップロードに失敗しました (413)。Nginx/CDNなどのリバースプロキシサーバーの設定でファイルサイズ制限（client_max_body_size）を確認し、ターゲットファイルサイズよりも大きい値に増やしてください。"
   },
   "copy_success": "クリップボードにコピーしました",
   "copy": "コピー",
@@ -584,7 +677,14 @@
     "tags": "タグ",
     "tagsDescription": "複数のタグは';'で区切る",
     "tagsTips": "複数のタグは\";\"で区切ります。</br> 色を指定するには、タグの末尾に&ltcolor&gtを追加します。例：1Gbps&ltgreen&gt。</br> 利用可能な色のリストについては、<label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color - Radix Themes</a></label>を参照してください。",
-    "private_site": "これはプライベートなKomariサイトです。先にログインしてください。"
+    "private_site": "これはプライベートなKomariサイトです。先にログインしてください。",
+    "day": "日",
+    "empty_error": "空にできません",
+    "generate": "生成",
+    "help": "ヘルプ",
+    "home": "ホーム",
+    "quinquennial": "5年",
+    "update_available": "新しいバージョンがあります"
   },
   "earthView": {
     "allOnline": "すべてオンライン",
@@ -618,7 +718,12 @@
     "title": "遅延監視",
     "target": "ターゲット",
     "interval": "間隔",
-    "type": "タイプ"
+    "type": "タイプ",
+    "disk_usage_estimate": "必要なディスクスペースの見積もり",
+    "disk_usage_with_settings": "設定された {{hour}} 時間の保存時間に基づき、{{space}} のディスクスペースが必要です。",
+    "server_view": "サーバービュー",
+    "task": "タスク",
+    "task_view": "タスクビュー"
   },
   "search": {
     "placeholder": "ノード名、地域、システムを検索...",
@@ -632,7 +737,11 @@
     "pageSize": "1ページあたり {{pageSize}} 台（テーマ設定）",
     "prev": "前のページ",
     "next": "次のページ",
-    "goto": "ページ番号を入力"
+    "goto": "ページ番号を入力",
+    "showing": "{{start}}-{{end}}件を表示",
+    "totalInfo": "全{{total}}件",
+    "first": "最初",
+    "last": "最後"
   },
   "view": {
     "mode": "表示モード"
@@ -670,5 +779,42 @@
   },
   "statusBar": {
     "forceShowTrafficText": "Modernビューでアップ/ダウントラフィックを表示"
-  }
+  },
+  "about": {
+    "ai": "Komari プロジェクトの開発プロセスは、人工知能ツールの支援を受けています。これらのツールは、コード生成、リファクタリング、デバッグなどのタスクを実行するために使用され、開発効率とコード品質を向上させます。AI によって生成されたすべてのコードと提案は、人間の開発者によってレビューおよび検証されています。",
+    "open_source": "Komari は MIT ライセンスに基づいてオープンソースであり、以下のオープンソースソフトウェアを使用して構築されています：",
+    "open_source_title": "オープンソースソフトウェアライセンス",
+    "readme_open_in_new_tab": "新しいタブで開く",
+    "title": "について"
+  },
+  "exec": {
+    "allCompleted": "すべてのタスクが完了しました",
+    "command": "コマンドを実行",
+    "commandPlaceholder": "whoami",
+    "description": "選択したノードでリモートコマンドを実行",
+    "errors": {
+      "emptyCommand": "コマンドは空にできません",
+      "executionFailed": "実行に失敗しました",
+      "noNodes": "少なくとも1つのノードを選択してください"
+    },
+    "execute": "コマンドを実行",
+    "executing": "実行中...",
+    "pollingTimeout": "タスクの実行がタイムアウトしました",
+    "results": "実行結果",
+    "selectedNodes": "選択されたノード",
+    "selectNodes": "ターゲットノードを選択",
+    "status": {
+      "failed": "失敗",
+      "running": "実行中",
+      "success": "成功",
+      "timeout": "タイムアウト"
+    },
+    "success": "コマンドの実行が完了しました",
+    "taskStarted": "タスクが開始されました",
+    "title": "リモート実行"
+  },
+  "Theme": "テーマ",
+  "Color": "色",
+  "Language": "言語",
+  "Settings": "設定"
 }

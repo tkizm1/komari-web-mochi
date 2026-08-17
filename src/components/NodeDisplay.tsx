@@ -36,6 +36,9 @@ const VIEW_MODES: ViewMode[] = [
   "earth",
 ];
 
+const isViewMode = (value: unknown): value is ViewMode =>
+  typeof value === "string" && VIEW_MODES.includes(value as ViewMode);
+
 const clampNumber = (value: number, min: number, max: number) => {
   if (Number.isNaN(value)) return min;
   return Math.min(max, Math.max(min, value));
@@ -57,6 +60,18 @@ const parseBooleanSetting = (value: unknown, fallback: boolean) => {
     if (["false", "0", "no", "off"].includes(normalized)) return false;
   }
   return fallback;
+};
+
+const parseViewModeSetting = (value: unknown, fallback: ViewMode): ViewMode => {
+  if (typeof value !== "string") return fallback;
+  const normalized = value.trim().toLowerCase();
+  return isViewMode(normalized) ? normalized : fallback;
+};
+
+const parseDashboardMaxWidth = (value: unknown) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+  return clampNumber(parsed, 960, 2560);
 };
 
 interface NodeDisplayProps {
@@ -82,18 +97,43 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData, forceShowTra
     const candidate = parsed ?? fallback;
     return clampNumber(candidate, 1, maxPageSize);
   }, [publicInfo]);
-  // 获取配置的默认视图模式，并转换为小写
-  const configDefaultMode = publicInfo?.theme_settings?.defaultViewMode?.toLowerCase() as ViewMode | undefined;
-  const defaultMode: ViewMode = configDefaultMode && 
-    ["modern", "compact", "classic", "detailed", "task", "earth"].includes(configDefaultMode) 
-    ? configDefaultMode : "modern";
+  const legacyDefaultMode = parseViewModeSetting(
+    publicInfo?.theme_settings?.defaultViewMode,
+    "modern"
+  );
+  const desktopDefaultMode = parseViewModeSetting(
+    publicInfo?.theme_settings?.desktopDefaultViewMode,
+    legacyDefaultMode
+  );
+  const mobileDefaultMode = parseViewModeSetting(
+    publicInfo?.theme_settings?.mobileDefaultViewMode,
+    legacyDefaultMode
+  );
+  const defaultMode = isMobile ? mobileDefaultMode : desktopDefaultMode;
+  const viewModeStorageKey = isMobile
+    ? "nodeViewMode.mobile"
+    : "nodeViewMode.desktop";
   
   const [viewMode, setViewMode] = useLocalStorage<ViewMode>(
-    "nodeViewMode",
+    viewModeStorageKey,
     defaultMode
   );
   const safeViewMode = VIEW_MODES.includes(viewMode) ? viewMode : "modern";
   const enableVirtualScroll = publicInfo?.theme_settings?.enableVirtualScroll ?? true;
+  const enableStaggeredCards = parseBooleanSetting(
+    publicInfo?.theme_settings?.enableStaggeredCards,
+    true
+  );
+  const dashboardMaxWidth = parseDashboardMaxWidth(
+    publicInfo?.theme_settings?.dashboardMaxWidth
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.localStorage.getItem(viewModeStorageKey) !== null) return;
+    if (viewMode === defaultMode) return;
+    setViewMode(defaultMode);
+  }, [defaultMode, setViewMode, viewMode, viewModeStorageKey]);
 
   // 组件初始化优化
   useEffect(() => {
@@ -211,15 +251,13 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData, forceShowTra
     });
   }, [nodes, searchTerm, liveData, selectedGroup]);
 
-  // 稳定在线节点列表：使用排序后的字符串作为依赖，避免数组引用变化
-  const onlineNodesKey = useMemo(() =>
-    (liveData?.online || []).slice().sort().join(','),
+  const onlineSet = useMemo(
+    () => new Set(liveData?.online || []),
     [liveData?.online]
   );
 
   // 全局排序节点（应用权重+离线节点位置设置）
   const sortedFilteredNodes = useMemo(() => {
-    const onlineSet = new Set(liveData?.online || []);
     const offlineNodePosition = publicInfo?.theme_settings?.offlineNodePosition ?? "后面";
 
     return [...filteredNodes].sort((a, b) => {
@@ -240,7 +278,7 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData, forceShowTra
 
       return a.weight - b.weight;
     });
-  }, [filteredNodes, onlineNodesKey, publicInfo]);
+  }, [filteredNodes, onlineSet, publicInfo]);
 
   const totalFiltered = sortedFilteredNodes.length;
   const paginationApplies =
@@ -329,7 +367,12 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData, forceShowTra
   }, [paginationApplies, pageInput, currentPage, updatePage]);
 
   return (
-    <div className="w-full">
+    <div
+      className={`node-dashboard-shell w-full ${enableStaggeredCards ? "staggered-cards" : ""}`}
+      style={{
+        maxWidth: dashboardMaxWidth ? `${dashboardMaxWidth}px` : undefined,
+      }}
+    >
       {/* 控制栏 */}
       <Flex
         direction={{ initial: "column", sm: "row" }}
@@ -475,16 +518,16 @@ const NodeDisplay: React.FC<NodeDisplayProps> = ({ nodes, liveData, forceShowTra
           {safeViewMode === "modern" && (
             // 移动端（<860px）不使用虚拟滚动，电脑端（>=860px）一律使用虚拟滚动
             (enableVirtualScroll && isDesktop) ? (
-              <ModernGridVirtual nodes={paginatedNodes} liveData={liveData} forceShowTrafficText={forceShowTrafficText} />
+              <ModernGridVirtual nodes={paginatedNodes} liveData={liveData} forceShowTrafficText={forceShowTrafficText} staggered={enableStaggeredCards} />
             ) : (
-              <ModernGrid nodes={paginatedNodes} liveData={liveData} forceShowTrafficText={forceShowTrafficText} />
+              <ModernGrid nodes={paginatedNodes} liveData={liveData} forceShowTrafficText={forceShowTrafficText} staggered={enableStaggeredCards} />
             )
           )}
           {safeViewMode === "compact" && (
-            <CompactList nodes={paginatedNodes} liveData={liveData} />
+            <CompactList nodes={paginatedNodes} liveData={liveData} staggered={enableStaggeredCards} />
           )}
           {safeViewMode === "classic" && (
-            <NodeGrid nodes={paginatedNodes} liveData={liveData} />
+            <NodeGrid nodes={paginatedNodes} liveData={liveData} staggered={enableStaggeredCards} />
           )}
           {safeViewMode === "detailed" && (
             <NodeTable nodes={paginatedNodes} liveData={liveData} />
@@ -690,9 +733,10 @@ type ModernGridProps = {
   nodes: NodeBasicInfo[];
   liveData: LiveData;
   forceShowTrafficText?: boolean;
+  staggered?: boolean;
 };
 
-const ModernGrid: React.FC<ModernGridProps> = ({ nodes, liveData, forceShowTrafficText }) => {
+const ModernGrid: React.FC<ModernGridProps> = ({ nodes, liveData, forceShowTrafficText, staggered = false }) => {
   const onlineNodes = liveData?.online || [];
 
   // 节点已在父组件排序，直接使用
@@ -711,15 +755,17 @@ const ModernGrid: React.FC<ModernGridProps> = ({ nodes, liveData, forceShowTraff
         overflowX: "hidden"
       }}
     >
-        {nodes.map((node) => {
+        {nodes.map((node, index) => {
           const isOnline = onlineNodes.includes(node.uuid);
           const nodeData = liveData?.data?.[node.uuid];
           return (
             <div
               key={node.uuid}
+              className={staggered ? "node-card-enter" : undefined}
               style={{
                 contain: "layout style paint",
-                willChange: "auto"
+                willChange: "auto",
+                ["--node-enter-delay" as any]: `${Math.min(index, 18) * 28}ms`,
               }}
             >
               <ModernCard
@@ -739,20 +785,23 @@ const ModernGrid: React.FC<ModernGridProps> = ({ nodes, liveData, forceShowTraff
 type CompactListProps = {
   nodes: NodeBasicInfo[];
   liveData: LiveData;
+  staggered?: boolean;
 };
 
-const CompactList: React.FC<CompactListProps> = ({ nodes, liveData }) => {
+const CompactList: React.FC<CompactListProps> = ({ nodes, liveData, staggered = false }) => {
   const onlineNodes = liveData?.online || [];
 
   // 节点已在父组件排序，直接使用
   return (
     <Flex direction="column" gap="2" className="p-4">
-      {nodes.map((node) => {
+      {nodes.map((node, index) => {
         const isOnline = onlineNodes.includes(node.uuid);
         const nodeData = liveData?.data?.[node.uuid];
         return (
           <NodeCompactCard
             key={node.uuid}
+            className={staggered ? "node-card-enter" : undefined}
+            style={{ ["--node-enter-delay" as any]: `${Math.min(index, 18) * 28}ms` }}
             basic={node}
             live={nodeData}
             online={isOnline}

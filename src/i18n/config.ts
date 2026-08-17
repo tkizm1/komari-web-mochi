@@ -5,6 +5,7 @@ import en from "./locales/en.json";
 import zh_CN from "./locales/zh_CN.json";
 import zh_TW from "./locales/zh_TW.json";
 import ja_JP from "./locales/ja_JP.json";
+import id_ID from "./locales/id_ID.json";
 
 const resources = {
   "en-US": {
@@ -27,6 +28,9 @@ const resources = {
   },
   "ja-JP": {
     translation: ja_JP,
+  },
+  "id-ID": {
+    translation: id_ID,
   },
 };
 

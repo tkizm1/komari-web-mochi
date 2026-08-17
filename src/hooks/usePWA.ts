@@ -24,11 +24,13 @@ export const usePWA = (): PWAState => {
       (window.navigator as any).standalone || 
       document.referrer.includes('android-app://');
 
-    setState(prev => ({
-      ...prev,
-      isStandalone,
-      isInstalled
-    }));
+    const frame = requestAnimationFrame(() => {
+      setState(prev => ({
+        ...prev,
+        isStandalone,
+        isInstalled
+      }));
+    });
 
     // Listen for install prompt
     const handleBeforeInstallPrompt = () => {
@@ -59,6 +61,7 @@ export const usePWA = (): PWAState => {
     window.addEventListener('offline', handleOffline);
 
     return () => {
+      cancelAnimationFrame(frame);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('online', handleOnline);

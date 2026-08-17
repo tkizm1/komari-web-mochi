@@ -1,22 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
+const readStoredValue = <T,>(key: string, fallback: T): T => {
+  try {
+    // 检查是否在浏览器环境
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const item = localStorage.getItem(key);
+      if (item !== null) {
+        return JSON.parse(item);
+      }
+    }
+  } catch (error) {
+    console.warn(`Error reading localStorage key "${key}":`, error);
+  }
+  // 如果读取失败或没有存储值，返回初始值
+  return fallback;
+};
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
+  const initialValueRef = useRef(initialValue);
+
+  useEffect(() => {
+    initialValueRef.current = initialValue;
+  }, [initialValue]);
+
   // 初始化时尝试从 localStorage 读取值
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    try {
-      // 检查是否在浏览器环境
-      if (typeof window !== 'undefined' && window.localStorage) {
-        const item = localStorage.getItem(key);
-        if (item !== null) {
-          return JSON.parse(item);
-        }
-      }
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
-    }
-    // 如果读取失败或没有存储值，返回初始值
-    return initialValue;
-  });
+  const [storedValue, setStoredValue] = useState<T>(() =>
+    readStoredValue(key, initialValue)
+  );
+
+  useEffect(() => {
+    setStoredValue(readStoredValue(key, initialValueRef.current));
+  }, [key]);
 
   // 监听 storage 事件，以便在其他标签页更改时同步
   useEffect(() => {

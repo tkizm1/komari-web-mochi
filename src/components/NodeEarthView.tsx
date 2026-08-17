@@ -72,7 +72,6 @@ const NodeEarthView: React.FC<NodeEarthViewProps> = ({ nodes, liveData }) => {
   const [t] = useTranslation();
   const [worldData, setWorldData] = useState<FeatureCollection | null>(null);
   const [, setSelectedRegion] = useState<string | null>(null);
-  const [isDataReady, setIsDataReady] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
   
   // 创建一个状态签名来追踪在线节点的变化
@@ -81,21 +80,30 @@ const NodeEarthView: React.FC<NodeEarthViewProps> = ({ nodes, liveData }) => {
   }, [liveData?.online]);
 
   // 大中华区的地区标识
-  const greaterChinaRegions = new Set(['🇭🇰', '🇨🇳', '🇲🇴', '🇹🇼']);
-  const greaterChinaNames = new Set(['Hong Kong S.A.R., China', 'China Mainland', 'Macau S.A.R., China', 'Taiwan, Province of China']);
+  const greaterChinaRegions = useMemo(
+    () => new Set(['🇭🇰', '🇨🇳', '🇲🇴', '🇹🇼']),
+    []
+  );
+  const greaterChinaNames = useMemo(
+    () => new Set(['Hong Kong S.A.R., China', 'China Mainland', 'Macau S.A.R., China', 'Taiwan, Province of China']),
+    []
+  );
   
   // 处理特殊名称映射（将地图数据中的名称映射到我们使用的名称）
-  const nameMapping: Record<string, string> = {
-    'China': 'China Mainland', // 地图: China -> 我们: China Mainland
-    'Taiwan': 'Taiwan, Province of China',  // 地图: Taiwan -> 我们: Taiwan, Province of China
-    'Hong Kong': 'Hong Kong S.A.R., China',  // 地图: Hong Kong -> 我们: Hong Kong S.A.R., China
-    'Macao': 'Macau S.A.R., China',  // 地图: Macao -> 我们: Macau S.A.R., China
-    'United States of America': 'United States',  // 地图: United States of America -> 我们: United States
-    'United Kingdom': 'United Kingdom',  // 地图数据已经是 United Kingdom，保持不变
-    'Russia': 'Russia',  // 地图数据已经是 Russia，保持不变
-    'South Korea': 'South Korea',  // 地图数据已经是 South Korea，保持不变
-    'Republic of Korea': 'South Korea'  // 备用映射
-  };
+  const nameMapping: Record<string, string> = useMemo(
+    () => ({
+      'China': 'China Mainland', // 地图: China -> 我们: China Mainland
+      'Taiwan': 'Taiwan, Province of China',  // 地图: Taiwan -> 我们: Taiwan, Province of China
+      'Hong Kong': 'Hong Kong S.A.R., China',  // 地图: Hong Kong -> 我们: Hong Kong S.A.R., China
+      'Macao': 'Macau S.A.R., China',  // 地图: Macao -> 我们: Macau S.A.R., China
+      'United States of America': 'United States',  // 地图: United States of America -> 我们: United States
+      'United Kingdom': 'United Kingdom',  // 地图数据已经是 United Kingdom，保持不变
+      'Russia': 'Russia',  // 地图数据已经是 Russia，保持不变
+      'South Korea': 'South Korea',  // 地图数据已经是 South Korea，保持不变
+      'Republic of Korea': 'South Korea'  // 备用映射
+    }),
+    []
+  );
   
   const hasGreaterChina = useMemo(() => {
     return nodes.some(node => greaterChinaRegions.has(node.region));
@@ -131,13 +139,15 @@ const NodeEarthView: React.FC<NodeEarthViewProps> = ({ nodes, liveData }) => {
     return geojson;
   }, []);
   
-  useEffect(() => {
-    if (nodes.length > 0 && liveData && liveData.online && liveData.data) {
-      if (nodes.some(node => liveData.data[node.uuid]) || liveData.online.length > 0) {
-        setIsDataReady(true);
-      }
-    }
-  }, [nodes, liveData]);
+  const isDataReady = useMemo(
+    () =>
+      nodes.length > 0 &&
+      !!liveData?.online &&
+      !!liveData?.data &&
+      (nodes.some((node) => liveData.data[node.uuid]) ||
+        liveData.online.length > 0),
+    [nodes, liveData]
+  );
   
   useEffect(() => {
     if (!isDataReady) return;
@@ -200,22 +210,27 @@ const NodeEarthView: React.FC<NodeEarthViewProps> = ({ nodes, liveData }) => {
   }, [hasGreaterChina, greaterChinaNames, greaterChinaRegions, nodes, nodesByRegion, liveData?.online]);
 
   const geoJsonStyle = useCallback((feature: Feature | undefined) => {
+    const inactiveColor = 'var(--gray-8)';
+    const onlineColor = 'var(--green-9)';
+    const offlineColor = 'var(--red-9)';
+    const partialColor = 'var(--amber-9)';
+
     if (!feature || !feature.properties) {
-      return { fillColor: 'transparent', weight: 0.5, opacity: 0.3, color: '#4a5568', fillOpacity: 0 };
+      return { fillColor: 'transparent', weight: 0.5, opacity: 0.3, color: inactiveColor, fillOpacity: 0 };
     }
     const countryName = feature.properties.name;
     const mappedName = nameMapping[countryName] || countryName;
     const isActive = activeRegions.has(mappedName);
     const status = isActive ? getRegionStatus(mappedName) : 'inactive';
     
-    let fillColor = 'transparent', fillOpacity = 0, weight = 0.5, color = '#4a5568';
+    let fillColor = 'transparent', fillOpacity = 0, weight = 0.5, color = inactiveColor;
     if (isActive) {
       weight = 2;
       fillOpacity = 0.6;
       switch (status) {
-        case 'online': fillColor = '#10b981'; color = '#10b981'; break;
-        case 'offline': fillColor = '#ef4444'; color = '#ef4444'; fillOpacity = 0.4; break;
-        case 'partial': fillColor = '#f59e0b'; color = '#f59e0b'; fillOpacity = 0.5; break;
+        case 'online': fillColor = onlineColor; color = onlineColor; break;
+        case 'offline': fillColor = offlineColor; color = offlineColor; fillOpacity = 0.4; break;
+        case 'partial': fillColor = partialColor; color = partialColor; fillOpacity = 0.5; break;
       }
     }
     return { fillColor, weight, opacity: isActive ? 1 : 0.3, color, fillOpacity, className: '' };
@@ -242,7 +257,7 @@ const NodeEarthView: React.FC<NodeEarthViewProps> = ({ nodes, liveData }) => {
     
     const nodesList = displayNodes.map(node => {
       const online = onlineSet.has(node.uuid);
-      const statusColor = online ? '#10b981' : '#ef4444';
+      const statusColor = online ? 'var(--green-9)' : 'var(--red-9)';
       const statusText = online ? t("nodeCard.online") : t("nodeCard.offline");
       return `<div style="display: flex; align-items: center; gap: 8px; padding: 4px 0;">
         <span style="width: 8px; height: 8px; border-radius: 50%; background: ${statusColor}; flex-shrink: 0;"></span>
@@ -251,14 +266,14 @@ const NodeEarthView: React.FC<NodeEarthViewProps> = ({ nodes, liveData }) => {
       </div>`;
     }).join('');
     
-    const moreText = remainingCount > 0 ? `<div style="display: flex; align-items: center; gap: 8px; padding: 4px 0; color: #94a3b8; font-style: italic;"><span style="width: 8px; height: 8px; flex-shrink: 0;"></span><span>+${remainingCount} ${t("earthView.more")}</span></div>` : '';
+    const moreText = remainingCount > 0 ? `<div style="display: flex; align-items: center; gap: 8px; padding: 4px 0; color: var(--gray-10); font-style: italic;"><span style="width: 8px; height: 8px; flex-shrink: 0;"></span><span>+${remainingCount} ${t("earthView.more")}</span></div>` : '';
     
     const tooltipStats = offlineNodes.length > 0 
       ? t("earthView.totalServers", { total: regionNodes.length }) + 
-        `, <span style="color: #10b981;">${onlineNodes.length} ${t("earthView.online")}</span>` +
-        `, <span style="color: #ef4444;">${offlineNodes.length} ${t("earthView.offline")}</span>`
+        `, <span style="color: var(--green-9);">${onlineNodes.length} ${t("earthView.online")}</span>` +
+        `, <span style="color: var(--red-9);">${offlineNodes.length} ${t("earthView.offline")}</span>`
       : t("earthView.totalServers", { total: regionNodes.length }) + 
-        `, <span style="color: #10b981;">${onlineNodes.length} ${t("earthView.online")}</span>`;
+        `, <span style="color: var(--green-9);">${onlineNodes.length} ${t("earthView.online")}</span>`;
     
     return `<div class="map-tooltip" style="min-width: 250px; max-width: 350px;">
         <h3 class="tooltip-title">${mappedName}</h3>
@@ -291,7 +306,7 @@ const NodeEarthView: React.FC<NodeEarthViewProps> = ({ nodes, liveData }) => {
       },
       click: () => setSelectedRegion(mappedName),
     });
-  }, [nodesByRegion, geoJsonStyle, generateTooltipContent, liveData?.online]);
+  }, [nodesByRegion, geoJsonStyle, generateTooltipContent, nameMapping]);
   
   const smallRegions = useMemo(() => {
     const regions: Array<{ name: string; emoji: string; coords: [number, number]; nodes: NodeBasicInfo[]; }> = [];
@@ -324,10 +339,10 @@ const NodeEarthView: React.FC<NodeEarthViewProps> = ({ nodes, liveData }) => {
         />}
         {smallRegions.map(region => {
           const status = getRegionStatus(region.name);
-          let color = '#4a5568';
-          if (status === 'online') color = '#10b981';
-          else if (status === 'offline') color = '#ef4444';
-          else if (status === 'partial') color = '#f59e0b';
+          let color = 'var(--gray-8)';
+          if (status === 'online') color = 'var(--green-9)';
+          else if (status === 'offline') color = 'var(--red-9)';
+          else if (status === 'partial') color = 'var(--amber-9)';
           
           // 重新生成tooltip内容
           const tooltipContent = generateTooltipContent(region.name, region.nodes);

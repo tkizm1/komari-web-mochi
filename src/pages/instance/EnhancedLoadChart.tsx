@@ -41,33 +41,39 @@ const EnhancedLoadChart = ({ data = [] }: EnhancedLoadChartProps) => {
   const [error, setError] = useState<string | null>(null);
   const [connectNulls, setConnectNulls] = useState(true);
 
-  // 计算可用视图
-  const presetViews = [
-    { label: t("chart.hours", { count: 1 }), hours: 1 },
-    { label: t("chart.hours", { count: 6 }), hours: 6 },
-    { label: t("chart.days", { count: 1 }), hours: 24 },
-    { label: t("chart.days", { count: 7 }), hours: 168 },
-  ];
-  
-  const availableView: { label: string; hours?: number }[] = [
-    { label: t("common.real_time") },
-  ];
-  
-  if (typeof max_record_preserve_time === "number" && max_record_preserve_time > 0) {
-    for (const v of presetViews) {
-      if (max_record_preserve_time >= v.hours) {
-        availableView.push({ label: v.label, hours: v.hours });
+  const availableView = useMemo(() => {
+    // 计算可用视图
+    const presetViews = [
+      { label: t("chart.hours", { count: 1 }), hours: 1 },
+      { label: t("chart.hours", { count: 6 }), hours: 6 },
+      { label: t("chart.days", { count: 1 }), hours: 24 },
+      { label: t("chart.days", { count: 7 }), hours: 168 },
+    ];
+
+    const views: { label: string; hours?: number }[] = [
+      { label: t("common.real_time") },
+    ];
+
+    if (typeof max_record_preserve_time === "number" && max_record_preserve_time > 0) {
+      for (const v of presetViews) {
+        if (max_record_preserve_time >= v.hours) {
+          views.push({ label: v.label, hours: v.hours });
+        }
+      }
+
+      if (
+        max_record_preserve_time > 168 &&
+        !presetViews.some(v => v.hours === max_record_preserve_time)
+      ) {
+        views.push({
+          label: t("chart.hours", { count: max_record_preserve_time }),
+          hours: max_record_preserve_time,
+        });
       }
     }
-    
-    if (max_record_preserve_time > 168 && 
-        !presetViews.some(v => v.hours === max_record_preserve_time)) {
-      availableView.push({
-        label: t("chart.hours", { count: max_record_preserve_time }),
-        hours: max_record_preserve_time,
-      });
-    }
-  }
+
+    return views;
+  }, [max_record_preserve_time, t]);
 
   // 获取历史数据
   useEffect(() => {
@@ -75,14 +81,18 @@ const EnhancedLoadChart = ({ data = [] }: EnhancedLoadChartProps) => {
     if (!uuid) return;
     
     if (hoursView === t("common.real_time") || !selected || !selected.hours) {
-      setRemoteData(null);
-      setError(null);
-      setLoading(false);
-      return;
+      const frame = requestAnimationFrame(() => {
+        setRemoteData(null);
+        setError(null);
+        setLoading(false);
+      });
+      return () => cancelAnimationFrame(frame);
     }
     
-    setLoading(true);
-    setError(null);
+    const frame = requestAnimationFrame(() => {
+      setLoading(true);
+      setError(null);
+    });
     
     const timeoutId = setTimeout(() => {
       fetch(`/api/records/load?uuid=${uuid}&hours=${selected.hours}`)
@@ -105,8 +115,11 @@ const EnhancedLoadChart = ({ data = [] }: EnhancedLoadChartProps) => {
         });
     }, 300);
 
-    return () => clearTimeout(timeoutId);
-  }, [hoursView, uuid]);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timeoutId);
+    };
+  }, [hoursView, uuid, availableView, t]);
 
   const node = nodeList?.find((n) => n.uuid === uuid);
   const live_data = all_live_data?.data?.data[uuid ?? ""];
@@ -215,20 +228,20 @@ const EnhancedLoadChart = ({ data = [] }: EnhancedLoadChartProps) => {
     );
   };
 
-  // 使用与移动端一致的颜色方案
+  // 使用主题色变量，保持浅色/深色模式下的对比一致。
   const colors = {
-    cpu: "#F38181",      // 珊瑚红
-    ram: "#FCE38A",      // 柔黄色
-    disk: "#95E1D3",     // 薄荷绿
+    cpu: "var(--red-9)",
+    ram: "var(--amber-9)",
+    disk: "var(--jade-9)",
     network: {
-      up: "#F38181",     // 上传用珊瑚红
-      down: "#95E1D3"    // 下载用薄荷绿
+      up: "var(--red-9)",
+      down: "var(--jade-9)"
     },
     connections: {
-      tcp: "#F38181",    // TCP 用珊瑚红
-      udp: "#C7CEEA"     // UDP 用淡紫色
+      tcp: "var(--red-9)",
+      udp: "var(--violet-9)"
     },
-    process: "#F38181"   // 进程用珊瑚红
+    process: "var(--red-9)"
   };
 
   const chartConfig = {
@@ -338,7 +351,7 @@ const EnhancedLoadChart = ({ data = [] }: EnhancedLoadChartProps) => {
     <div className="desktop-chart-wrapper">
       {/* 时间周期选择器 */}
       {availableView.length > 1 && (
-        <div className="w-full px-3 md:px-0 mb-2">
+        <div className="w-full mb-2">
           <div 
             className="w-full overflow-x-auto md:overflow-x-visible pb-2 md:pb-0"
             style={{
@@ -348,15 +361,13 @@ const EnhancedLoadChart = ({ data = [] }: EnhancedLoadChartProps) => {
               maxWidth: "100%",
             }}
           >
-            <Flex justify="center" className="w-full min-w-max md:min-w-0">
+            <Flex justify="start" className="w-full min-w-max md:min-w-0">
               <SegmentedControl.Root
-                radius="full"
+                radius="small"
                 value={hoursView}
                 onValueChange={setHoursView}
-                className="flex-shrink-0"
+                className="node-detail-toggle flex-shrink-0"
                 style={{ 
-                  transform: "scale(0.95)",
-                  transformOrigin: "center",
                   height: "38px",
                   minWidth: "fit-content"
                 }}

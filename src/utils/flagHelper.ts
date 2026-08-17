@@ -3,10 +3,11 @@ import type { PublicInfo } from "@/contexts/PublicInfoContext";
 /**
  * 根据配置处理台湾地区的旗帜显示
  * @param regionFlag 原始地区旗帜 emoji（如 '🇹🇼'）
- * @param _publicInfo 公共信息配置（保留参数以保持接口兼容性）
+ * @param publicInfo 公共信息配置（保留参数以保持接口兼容性）
  * @returns 处理后的旗帜 emoji 或 null
  */
-export const getFlagDisplay = (regionFlag: string, _publicInfo: PublicInfo | null): string => {
+export const getFlagDisplay = (regionFlag: string, publicInfo: PublicInfo | null): string => {
+  void publicInfo;
   // 直接返回原始旗帜
   return regionFlag;
 };
@@ -16,6 +17,7 @@ export const getFlagDisplay = (regionFlag: string, _publicInfo: PublicInfo | nul
  * @param regionFlag 地区旗帜 emoji
  * @returns 是否需要特殊处理
  */
-export const isSpecialRegion = (_regionFlag: string): boolean => {
+export const isSpecialRegion = (regionFlag: string): boolean => {
+  void regionFlag;
   return false;
 };

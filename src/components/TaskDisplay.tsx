@@ -848,8 +848,13 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
     setIsExporting(true);
     
     try {
-      const isDarkMode = document.documentElement.classList.contains('dark');
-      const backgroundColor = isDarkMode ? '#1a1a1a' : '#ffffff';
+      const themeRoot = document.querySelector('.radix-themes') ?? document.documentElement;
+      const backgroundColor =
+        getComputedStyle(themeRoot)
+          .getPropertyValue('--color-panel-solid')
+          .trim() ||
+        getComputedStyle(chartCardRef.current).backgroundColor ||
+        '#ffffff';
       
       const options = {
         quality: 1.0,
@@ -885,7 +890,9 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
       
       try {
         const blob = await domtoimage.toBlob(chartCardRef.current, {
-          bgcolor: '#ffffff',
+        bgcolor: getComputedStyle(document.documentElement)
+          .getPropertyValue('--color-panel-solid')
+          .trim() || '#ffffff',
           quality: 0.95,
         });
         
@@ -940,19 +947,19 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
     const displayPayload = validPayload.slice(0, 10);
     const hasMore = validPayload.length > 10;
 
-    // 使用纯色背景,确保最佳兼容性
     const tooltipStyle = {
       minWidth: "180px",
       maxWidth: "300px",
-      backgroundColor: "rgba(0, 0, 0, 0.95)",
-      border: "1px solid rgba(255, 255, 255, 0.15)",
+      backgroundColor: "var(--color-panel-solid)",
+      border: "1px solid var(--gray-a5)",
+      color: "var(--gray-12)",
     };
 
     const tooltipClassName = "p-3 rounded-lg shadow-xl";
 
     return (
       <div className={tooltipClassName} style={tooltipStyle}>
-        <p className="text-white font-medium text-xs mb-2">
+        <p className="font-medium text-xs mb-2" style={{ color: "var(--gray-12)" }}>
           {new Date(label).toLocaleString([], { 
             month: "short",
             day: "numeric",
@@ -976,11 +983,11 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                       className="w-2 h-2 rounded-full flex-shrink-0"
                       style={{ background: colorScheme.primary }}
                     />
-                    <span className="text-gray-300 text-xs truncate">
+                    <span className="text-xs truncate" style={{ color: "var(--gray-11)" }}>
                       {node.name}
                     </span>
                   </div>
-                  <span className="text-white font-semibold text-xs tabular-nums flex-shrink-0">
+                  <span className="font-semibold text-xs tabular-nums flex-shrink-0" style={{ color: "var(--gray-12)" }}>
                     {entry.value.toFixed(1)}ms
                   </span>
                 </div>
@@ -1019,11 +1026,11 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                       className="w-2 h-2 rounded-full flex-shrink-0"
                       style={{ background: displayColor }}
                     />
-                    <span className="text-gray-300 text-xs truncate">
+                    <span className="text-xs truncate" style={{ color: "var(--gray-11)" }}>
                       {node.name} - {MetricConfigs[metric]?.label || metric}
                     </span>
                   </div>
-                  <span className="text-white font-semibold text-xs tabular-nums flex-shrink-0">
+                  <span className="font-semibold text-xs tabular-nums flex-shrink-0" style={{ color: "var(--gray-12)" }}>
                     {formatMetricValue(entry.value, metric)}
                   </span>
                 </div>
@@ -1031,7 +1038,7 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
             }
           })}
           {hasMore && (
-            <div className="text-gray-400 text-xs pt-1 border-t border-white/10">
+            <div className="text-xs pt-1" style={{ color: "var(--gray-10)", borderTop: "1px solid var(--gray-a4)" }}>
               +{validPayload.length - 10} more...
             </div>
           )}
@@ -1097,7 +1104,7 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                   <Flex direction="column" align="start" gap="2">
                     <Text size="2" weight="bold" className="truncate w-full" title={task.name}>{task.name}</Text>
                     <Flex align="center" gap="1">
-                      <Activity size={12} className="text-gray-9" />
+                      <Activity size={12} style={{ color: "var(--gray-10)" }} />
                       <Text size="1" color="gray" className="whitespace-nowrap">
                         {task.interval}s
                       </Text>
@@ -1470,9 +1477,9 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                           </Text>
                           {!isHidden && (
                             isOnline ? (
-                              <CheckCircle size={isMobile ? 12 : 16} className="text-green-500 flex-shrink-0" />
+                              <CheckCircle size={isMobile ? 12 : 16} className="flex-shrink-0" style={{ color: "var(--green-11)" }} />
                             ) : (
-                              <XCircle size={isMobile ? 12 : 16} className="text-red-500 flex-shrink-0" />
+                              <XCircle size={isMobile ? 12 : 16} className="flex-shrink-0" style={{ color: "var(--red-11)" }} />
                             )
                           )}
                         </Flex>
@@ -1486,7 +1493,7 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                               </Text>
                             </div>
                             
-                            <div className={`w-full ${isMobile ? 'h-1' : 'h-1.5'} bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden`}>
+                            <div className={`w-full ${isMobile ? 'h-1' : 'h-1.5'} rounded-full overflow-hidden`} style={{ background: "var(--gray-a4)" }}>
                               <div 
                                 className="h-full transition-all duration-500"
                                 style={{
@@ -1500,7 +1507,7 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                               <div className="grid grid-cols-2 gap-x-1 text-xs">
                                 <div>
                                   <Text color="gray" size="1">Loss:</Text>
-                                  <Text size="1" weight="medium" className={stats.lossRate > 10 ? "text-red-500" : ""}>
+                                  <Text size="1" weight="medium" style={stats.lossRate > 10 ? { color: "var(--red-11)" } : undefined}>
                                     {stats.lossRate}%
                                   </Text>
                                 </div>
@@ -1513,7 +1520,7 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                               <div className="grid grid-cols-2 gap-1 text-xs">
                                 <div>
                                   <Text color="gray" size="1">Loss:</Text>
-                                  <Text size="1" weight="medium" className={stats.lossRate > 10 ? "text-red-500" : ""}>
+                                  <Text size="1" weight="medium" style={stats.lossRate > 10 ? { color: "var(--red-11)" } : undefined}>
                                     {stats.lossRate}%
                                   </Text>
                                 </div>
@@ -1546,7 +1553,7 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                             
                             {/* Progress bar for percentage metrics */}
                             {selectedMetrics[0] && ['cpu', 'gpu', 'ram', 'disk', 'swap', 'traffic_limit'].includes(selectedMetrics[0]) && stats.metrics?.[selectedMetrics[0]] && (
-                              <div className={`w-full ${isMobile ? 'h-1' : 'h-1.5'} bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden`}>
+                              <div className={`w-full ${isMobile ? 'h-1' : 'h-1.5'} rounded-full overflow-hidden`} style={{ background: "var(--gray-a4)" }}>
                                 <div 
                                   className="h-full transition-all duration-500"
                                   style={{
@@ -1569,7 +1576,7 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                                   </Text>
                                 </div>
                                 {/* Range on separate line */}
-                                <div className="pt-1 border-t border-gray-200 dark:border-gray-700">
+                                <div className="pt-1" style={{ borderTop: "1px solid var(--gray-a4)" }}>
                                   <Text color="gray" size="1" className="text-xs">Range:</Text>
                                   <Text size="1" weight="medium" className="text-xs tabular-nums text-center block mt-0.5">
                                     {stats.metrics && selectedMetrics[0] && stats.metrics[selectedMetrics[0]]
@@ -1607,7 +1614,7 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                                   </div>
                                 </div>
                                 {/* Range on separate line */}
-                                <div className="pt-1 border-t border-gray-200 dark:border-gray-700">
+                                <div className="pt-1" style={{ borderTop: "1px solid var(--gray-a4)" }}>
                                   <Text color="gray" size="1" className="text-xs">Range:</Text>
                                   <Text size="1" weight="medium" className="text-xs tabular-nums block mt-0.5">
                                     {stats.metrics && selectedMetrics[0] && stats.metrics[selectedMetrics[0]]
@@ -1740,8 +1747,14 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                       );
                     })}
                     {remaining > 0 && (
-                      <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">+{remaining} more</span>
+                      <div
+                        className="flex items-center gap-2 px-3 py-1 rounded-md"
+                        style={{
+                          background: "var(--gray-a2)",
+                          border: "1px solid var(--gray-a5)",
+                        }}
+                      >
+                        <span className="text-sm font-medium" style={{ color: "var(--gray-11)" }}>+{remaining} more</span>
                       </div>
                     )}
                   </>
@@ -1819,8 +1832,14 @@ const TaskDisplay: React.FC<TaskDisplayProps> = ({ nodes, liveData }) => {
                             );
                           })}
                           {remaining > 0 && (
-                            <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
-                              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">+{remaining} more</span>
+                            <div
+                              className="flex items-center gap-2 px-3 py-1 rounded-md"
+                              style={{
+                                background: "var(--gray-a2)",
+                                border: "1px solid var(--gray-a5)",
+                              }}
+                            >
+                              <span className="text-sm font-medium" style={{ color: "var(--gray-11)" }}>+{remaining} more</span>
                             </div>
                           )}
                         </>

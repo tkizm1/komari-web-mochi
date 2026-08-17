@@ -26,6 +26,24 @@ import { Toaster } from "./components/ui/sonner";
 import { useHtmlLang } from "./hooks/useHtmlLang";
 import { CustomStyleInjector } from "./components/CustomStyleInjector";
 import { RPC2Provider } from "./contexts/RPC2Context";
+
+const PRELOAD_RECOVERY_KEY = "mochi:preload-recovered";
+
+window.addEventListener("vite:preloadError", (event) => {
+  event.preventDefault();
+
+  if (sessionStorage.getItem(PRELOAD_RECOVERY_KEY) === "1") {
+    return;
+  }
+
+  sessionStorage.setItem(PRELOAD_RECOVERY_KEY, "1");
+  window.location.reload();
+});
+
+window.addEventListener("load", () => {
+  sessionStorage.removeItem(PRELOAD_RECOVERY_KEY);
+});
+
 const App = () => {
   const [appearance, setAppearance] = useLocalStorage<Appearance>(
     "appearance",

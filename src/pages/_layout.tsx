@@ -4,22 +4,21 @@ import NavBar from "../components/NavBar";
 import { Outlet } from "react-router-dom";
 import { NodeListProvider } from "@/contexts/NodeListContext";
 
-const IndexLayout = () => {
-  // 使用我们的LiveDataContext
-  const InnerLayout = () => {
-    return (
-      <>
-        <div className="layout flex flex-col w-full min-h-screen bg-accent-1">
-          <NavBar />
-          <main className="main-content m-1 flex-1">
-            <Outlet />
-          </main>
-          <Footer />
-        </div>
-      </>
-    );
-  };
+const InnerLayout = () => {
+  return (
+    <>
+      <div className="layout flex flex-col w-full min-h-screen bg-accent-1">
+        <NavBar />
+        <main className="main-content m-1 flex-1">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+    </>
+  );
+};
 
+const IndexLayout = () => {
   return (
     <LiveDataProvider>
       <NodeListProvider>

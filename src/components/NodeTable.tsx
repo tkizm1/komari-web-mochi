@@ -121,16 +121,18 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
       case 'cpu':
         comparison = aData.cpu.usage - bData.cpu.usage;
         break;
-      case 'ram':
+      case 'ram': {
         const aRamPercent = a.mem_total ? (aData.ram.used / a.mem_total) * 100 : 0;
         const bRamPercent = b.mem_total ? (bData.ram.used / b.mem_total) * 100 : 0;
         comparison = aRamPercent - bRamPercent;
         break;
-      case 'disk':
+      }
+      case 'disk': {
         const aDiskPercent = a.disk_total ? (aData.disk.used / a.disk_total) * 100 : 0;
         const bDiskPercent = b.disk_total ? (bData.disk.used / b.disk_total) * 100 : 0;
         comparison = aDiskPercent - bDiskPercent;
         break;
+      }
       case 'price':
         comparison = a.price - b.price;
         break;
@@ -353,7 +355,7 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
                         </Badge>
                       </div>
                       {nodeData.message && (
-                        <Tips color="#CE282E">{nodeData.message}</Tips>
+                        <Tips color="var(--red-9)">{nodeData.message}</Tips>
                       )}
                     </Flex>
                   </TableCell>
@@ -402,10 +404,10 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
                               node.traffic_limit,
                               node.traffic_limit_type
                             );
-                            if (percentage > 90) return '#ef4444';
-                            if (percentage > 70) return '#f59e0b';
-                            if (percentage > 50) return '#3b82f6';
-                            return '#10b981';
+                            if (percentage > 90) return 'var(--red-9)';
+                            if (percentage > 70) return 'var(--amber-9)';
+                            if (percentage > 50) return 'var(--blue-9)';
+                            return 'var(--green-9)';
                           })(),
                           fontWeight: 'bold'
                         }}>
@@ -435,10 +437,10 @@ const NodeTable: React.FC<NodeTableProps> = ({ nodes, liveData }) => {
                               node.traffic_limit,
                               node.traffic_limit_type
                             );
-                            if (percentage > 90) return '#ef4444';
-                            if (percentage > 70) return '#f59e0b';
-                            if (percentage > 50) return '#3b82f6';
-                            return '#10b981';
+                            if (percentage > 90) return 'var(--red-9)';
+                            if (percentage > 70) return 'var(--amber-9)';
+                            if (percentage > 50) return 'var(--blue-9)';
+                            return 'var(--green-9)';
                           })(),
                           fontWeight: 'bold'
                         }}>

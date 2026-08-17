@@ -50,6 +50,7 @@ export default defineConfig(({ mode }) => {
           ]
         },
         workbox: {
+          cleanupOutdatedCaches: true,
           globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
           runtimeCaching: [
             {
@@ -87,6 +88,7 @@ export default defineConfig(({ mode }) => {
     build: {
       assetsDir: "assets",
       outDir: "dist",
+      cssCodeSplit: false,
       rollupOptions: {
         output: {
           // go embed ignore files start with '_'

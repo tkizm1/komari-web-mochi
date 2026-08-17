@@ -6,6 +6,8 @@ import type { NodeBasicInfo } from "@/contexts/NodeListContext";
 import type { Record } from "@/types/LiveData";
 import { formatUptime } from "./Node";
 import { formatBytes, getTrafficStats } from "@/utils";
+import { usePublicInfo } from "@/contexts/PublicInfoContext";
+import { usePingSummary } from "@/hooks/use-ping-summary";
 import "./NodeModernCard.css";
 
 interface ModernCardDynamicProps {
@@ -16,6 +18,37 @@ interface ModernCardDynamicProps {
   children: React.ReactNode; // 静态内容插槽
 }
 
+const parseBooleanSetting = (value: unknown, fallback: boolean) => {
+  if (value === undefined || value === null) return fallback;
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value !== 0;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (["true", "1", "yes", "on"].includes(normalized)) return true;
+    if (["false", "0", "no", "off"].includes(normalized)) return false;
+  }
+  return fallback;
+};
+
+const parsePingStatsHours = (value: unknown) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return 24;
+  return Math.min(168, Math.max(1, parsed));
+};
+
+const getLatencyColor = (value: number | null) => {
+  if (value === null) return "var(--red-9)";
+  if (value < 100) return "var(--green-9)";
+  if (value < 220) return "var(--amber-9)";
+  return "var(--red-9)";
+};
+
+const formatLatency = (value: number | null) =>
+  value === null ? "-" : `${Math.round(value)} ms`;
+
+const formatLoss = (value: number | null) =>
+  value === null ? "-" : `${value.toFixed(1)}%`;
+
 const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({ 
   basic, 
   live, 
@@ -24,6 +57,18 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
   children
 }) => {
   const { t } = useTranslation();
+  const { publicInfo } = usePublicInfo();
+  const showModernPingStats = parseBooleanSetting(
+    publicInfo?.theme_settings?.showModernPingStats,
+    true
+  );
+  const modernPingStatsHours = parsePingStatsHours(
+    publicInfo?.theme_settings?.modernPingStatsHours
+  );
+  const pingSummary = usePingSummary(
+    showModernPingStats && online ? basic.uuid : undefined,
+    modernPingStatsHours
+  );
 
   // 默认值
   const defaultLive: Record = {
@@ -68,10 +113,10 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
 
   // 进度条颜色函数
   const getProgressColor = (value: number) => {
-    if (value > 90) return "#ef4444";
-    if (value > 70) return "#f59e0b";
-    if (value > 50) return "#3b82f6";
-    return "#10b981";
+    if (value > 90) return "var(--red-9)";
+    if (value > 70) return "var(--amber-9)";
+    if (value > 50) return "var(--blue-9)";
+    return "var(--green-9)";
   };
 
   // 进度条颜色
@@ -81,6 +126,18 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
     disk: getProgressColor(diskPercent),
     traffic: getProgressColor(trafficPercentage)
   };
+  const pingStatsItem = pingSummary.items[0];
+  const pingSamples = pingStatsItem?.samples ?? [];
+  const derivedLoss = pingStatsItem
+    ? pingStatsItem.loss ??
+      (pingSamples.length
+        ? (pingSamples.filter((sample) => sample === null).length /
+            pingSamples.length) *
+          100
+        : null)
+    : null;
+  const hasPingSamples = pingSamples.length > 0;
+  const showPingPanel = showModernPingStats;
 
   // 动态计算状态颜色
   const getStatusColor = () => {
@@ -124,7 +181,7 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
       {/* 状态指示条 */}
       <div 
         className={`absolute top-0 left-0 right-0 h-1 ${
-          online ? 'bg-gradient-to-r from-green-500 via-emerald-500 to-green-500' : 'bg-gray-500'
+          online ? 'modern-card-status-online' : 'modern-card-status-offline'
         }`}
         style={{
           boxShadow: online ? '0 0 10px rgba(16, 185, 129, 0.5)' : 'none'
@@ -139,7 +196,7 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
         {/* 资源使用情况网格 - 移动端 2x2 紧凑布局，桌面端 2x2 */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3 min-w-0 relative">
           {/* CPU 使用率 */}
-          <div className="bg-accent-2/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-accent-4 hover:bg-accent-3/50 min-w-0">
+          <div className="modern-metric-tile bg-accent-2/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-accent-4 hover:bg-accent-3/50 min-w-0">
             <Flex justify="between" align="center" mb="2">
               <Flex gap="1" align="center">
                 <Cpu size={14} className="text-accent-10" />
@@ -166,7 +223,7 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
           </div>
 
           {/* 内存使用率 */}
-          <div className="bg-accent-2/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-accent-4 hover:bg-accent-3/50 min-w-0">
+          <div className="modern-metric-tile bg-accent-2/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-accent-4 hover:bg-accent-3/50 min-w-0">
             <Flex justify="between" align="center" mb="2">
               <Flex gap="1" align="center">
                 <MemoryStick size={14} className="text-accent-10" />
@@ -196,7 +253,7 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
           </div>
 
           {/* 磁盘使用率和总流量 */}
-          <div className="bg-accent-2/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-accent-4 hover:bg-accent-3/50 min-w-0 flex flex-col gap-2 min-h-[9rem] sm:min-h-[10rem]">
+          <div className="modern-metric-tile bg-accent-2/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-accent-4 hover:bg-accent-3/50 min-w-0 flex flex-col gap-2 min-h-[9rem] sm:min-h-[10rem]">
             {/* 磁盘使用率 */}
             <div className="flex-1">
               <Flex justify="between" align="center" mb="1">
@@ -283,34 +340,34 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
           </div>
 
           {/* 网络速度 */}
-          <div className="bg-accent-2/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-accent-4 hover:bg-accent-3/50 min-w-0">
+          <div className="modern-metric-tile bg-accent-2/50 rounded-lg sm:rounded-xl p-2 sm:p-3 border border-accent-4 hover:bg-accent-3/50 min-w-0">
             <Flex gap="1" align="center" mb="2">
               <Network size={14} className="text-accent-10" />
               <Text size="1" weight="medium">Speed</Text>
             </Flex>
             <Flex direction="column" gap="1" className="sm:gap-2">
-              <Flex justify="between" align="center" className="bg-green-500/10 rounded px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-0">
+              <Flex justify="between" align="center" className="modern-speed-row modern-speed-up bg-green-500/10 rounded px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-0">
                 <Flex gap="1" align="center">
-                  <TrendingUp size={10} className="text-green-500 sm:w-3 sm:h-3" />
+                  <TrendingUp size={10} className="sm:w-3 sm:h-3" style={{ color: "var(--green-11)" }} />
                   <Text size="1" weight="medium" className="text-xs sm:text-sm hidden sm:inline">Up</Text>
                 </Flex>
                 <div className="overflow-hidden">
                   <div className="transform origin-right scale-[0.85] sm:scale-100 inline-block">
-                    <Text size="1" weight="bold" className="text-green-600 text-xs sm:text-sm whitespace-nowrap">
+                    <Text size="1" weight="bold" className="text-xs sm:text-sm whitespace-nowrap" style={{ color: "var(--green-11)" }}>
                       <span className="inline sm:hidden">{formatBytes(liveData.network.up, true)}/s</span>
                       <span className="hidden sm:inline">{formatBytes(liveData.network.up, false, 1)}/s</span>
                     </Text>
                   </div>
                 </div>
               </Flex>
-              <Flex justify="between" align="center" className="bg-blue-500/10 rounded px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-0">
+              <Flex justify="between" align="center" className="modern-speed-row modern-speed-down bg-blue-500/10 rounded px-1.5 sm:px-2 py-0.5 sm:py-1 min-w-0">
                 <Flex gap="1" align="center">
-                  <TrendingDown size={10} className="text-blue-500 sm:w-3 sm:h-3" />
+                  <TrendingDown size={10} className="sm:w-3 sm:h-3" style={{ color: "var(--blue-11)" }} />
                   <Text size="1" weight="medium" className="text-xs sm:text-sm hidden sm:inline">Down</Text>
                 </Flex>
                 <div className="overflow-hidden">
                   <div className="transform origin-right scale-[0.85] sm:scale-100 inline-block">
-                    <Text size="1" weight="bold" className="text-blue-600 text-xs sm:text-sm whitespace-nowrap">
+                    <Text size="1" weight="bold" className="text-xs sm:text-sm whitespace-nowrap" style={{ color: "var(--blue-11)" }}>
                       <span className="inline sm:hidden">{formatBytes(liveData.network.down, true)}/s</span>
                       <span className="hidden sm:inline">{formatBytes(liveData.network.down, false, 1)}/s</span>
                     </Text>
@@ -320,6 +377,90 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
             </Flex>
           </div>
         </div>
+
+        {showPingPanel && (
+          <div className={`modern-ping-panel ${online && hasPingSamples ? "" : "is-empty"}`}>
+            <Flex justify="between" align="center" className="modern-ping-header">
+              <Flex align="center" gap="2">
+                <Activity size={13} className="text-accent-10" />
+                <Text size="1" weight="medium">
+                  {t("modernCard.pingStats", { defaultValue: "Ping Stats" })}
+                </Text>
+              </Flex>
+              <Text size="1" color="gray" className="tabular-nums">
+                {modernPingStatsHours}h
+              </Text>
+            </Flex>
+
+            <div className="modern-ping-grid">
+              <div className="modern-ping-metric">
+                <Flex justify="between" align="center">
+                  <Text size="1" color="gray">
+                    {t("modernCard.latency", { defaultValue: "Latency" })}
+                  </Text>
+                  <Text size="1" weight="bold" className="tabular-nums">
+                    {pingSummary.loading && !pingStatsItem
+                      ? "-"
+                      : formatLatency(pingStatsItem?.current ?? pingStatsItem?.avg ?? null)}
+                  </Text>
+                </Flex>
+                <div className="modern-ping-bars" aria-hidden="true">
+                  {(hasPingSamples ? pingSamples : Array(18).fill(null)).map(
+                    (sample, index) => (
+                      <span
+                        key={`latency-${index}`}
+                        className={hasPingSamples ? "" : "is-loading"}
+                        style={{
+                          height: hasPingSamples
+                            ? `${Math.min(18, Math.max(8, (sample ?? 260) / 16))}px`
+                            : undefined,
+                          backgroundColor: hasPingSamples
+                            ? getLatencyColor(sample)
+                            : undefined,
+                        }}
+                      />
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className="modern-ping-metric">
+                <Flex justify="between" align="center">
+                  <Text size="1" color="gray">
+                    {t("modernCard.loss", { defaultValue: "Loss" })}
+                  </Text>
+                  <Text size="1" weight="bold" className="tabular-nums">
+                    {pingSummary.loading && !pingStatsItem
+                      ? "-"
+                      : formatLoss(derivedLoss)}
+                  </Text>
+                </Flex>
+                <div className="modern-ping-bars" aria-hidden="true">
+                  {(hasPingSamples ? pingSamples : Array(18).fill(null)).map(
+                    (sample, index) => (
+                      <span
+                        key={`loss-${index}`}
+                        className={hasPingSamples ? "" : "is-loading"}
+                        style={{
+                          height: hasPingSamples
+                            ? sample === null
+                              ? "18px"
+                              : "10px"
+                            : undefined,
+                          backgroundColor: hasPingSamples
+                            ? sample === null
+                              ? "var(--red-9)"
+                              : "var(--green-9)"
+                            : undefined,
+                        }}
+                      />
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 底部信息 - 移动端显示但缩小 */}
         <Flex justify="between" align="center" className="pt-2 sm:pt-3 border-t border-accent-4">
@@ -336,7 +477,7 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
           {online && (
             <Flex gap="2 sm:gap-3" align="center" className="flex-shrink-0">
               <Flex gap="1" align="center" className="min-w-0 mr-0 sm:mr-3">
-                <Zap size={10} className="text-yellow-500 sm:w-3 sm:h-3 flex-shrink-0" />
+                <Zap size={10} className="sm:w-3 sm:h-3 flex-shrink-0" style={{ color: "var(--amber-11)" }} />
                 <div className="transform origin-left scale-[0.8] sm:scale-100 inline-block">
                   <Text size="1" color="gray" className="whitespace-nowrap">
                     Load: {liveData.load?.load1?.toFixed(2) || "0.00"}
@@ -344,9 +485,9 @@ const ModernCardDynamicComponent: React.FC<ModernCardDynamicProps> = ({
                 </div>
               </Flex>
               <Flex gap="1" align="center" className="flex-shrink-0">
-                <Activity size={10} className="text-green-500 sm:w-3 sm:h-3" />
+                <Activity size={10} className="sm:w-3 sm:h-3" style={{ color: "var(--green-11)" }} />
                 <div className="transform origin-right scale-[0.8] sm:scale-100 inline-block">
-                  <Text size="1" weight="medium" className="text-green-600 whitespace-nowrap">
+                  <Text size="1" weight="medium" className="whitespace-nowrap" style={{ color: "var(--green-11)" }}>
                     Active
                   </Text>
                 </div>

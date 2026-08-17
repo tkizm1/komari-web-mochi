@@ -1,7 +1,13 @@
 /* Status Bar Container */
 .status-bar-container {
-  background: var(--color-background);
-  border: 1px solid var(--gray-a5);
+  width: auto;
+  max-width: calc(100vw - 2rem);
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--color-background) 90%, transparent);
+  border: 1px solid var(--gray-a4);
+  border-radius: 8px;
+  box-shadow: 0 16px 42px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(14px);
   position: relative;
   overflow: hidden;
 }
@@ -9,16 +15,18 @@
 /* Status Card Styles */
 .status-card {
   position: relative;
-  background: var(--gray-a2);
+  background: color-mix(in srgb, var(--gray-a2) 70%, transparent);
   border: 1px solid var(--gray-a4);
+  border-radius: 8px;
   transition: all 0.2s ease;
-  padding: 0.875rem;
+  padding: 1rem;
   height: 100%;
 }
 
 .status-card:hover {
-  background: var(--gray-a3);
+  background: color-mix(in srgb, var(--gray-a3) 82%, transparent);
   border-color: var(--gray-a6);
+  transform: translateY(-1px);
 }
 
 /* Icon animations */
@@ -108,7 +116,7 @@
 .status-cards-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.875rem;
   width: 100%;
 }
 
@@ -127,6 +135,7 @@
 @media (max-width: 640px) {
   .status-bar-container {
     margin: 0.5rem;
+    max-width: calc(100vw - 1rem);
     padding: 0.5rem !important;
   }
 
@@ -149,8 +158,8 @@
   }
 
   .status-card {
-    padding: 0.5rem;
-    min-height: 4rem !important;
+    padding: 0.75rem;
+    min-height: 4.5rem !important;
   }
 
   .status-icon {

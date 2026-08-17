@@ -17,8 +17,14 @@ export interface PublicInfo {
     enableVirtualScroll?: boolean;
     offlineNodePosition?: string;
     defaultViewMode?: string;
+    desktopDefaultViewMode?: string;
+    mobileDefaultViewMode?: string;
     enablePagination?: boolean;
     paginationPageSize?: number | string;
+    enableStaggeredCards?: boolean;
+    dashboardMaxWidth?: number | string;
+    showModernPingStats?: boolean;
+    modernPingStatsHours?: number | string;
     "customAppearance.enabled"?: boolean;
     "customBackground.imageUrl"?: string;
     "customBackground.fixed"?: boolean;

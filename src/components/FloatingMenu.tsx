@@ -152,7 +152,12 @@ const FloatingMenu: React.FC = () => {
                 >
                   {/* Label */}
                   <motion.div
-                    className="bg-gray-1 px-3 py-1.5 rounded-lg shadow-md border border-gray-4"
+                    className="px-3 py-1.5 rounded-lg shadow-md"
+                    style={{
+                      background: "var(--color-panel-solid)",
+                      border: "1px solid var(--gray-a5)",
+                      color: "var(--gray-12)",
+                    }}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.05 + 0.1 }}

@@ -58,10 +58,27 @@
       "provider": "Single Sign-On Provider",
       "provider_description": "Choose the authentication provider for single sign-on",
       "callback_url_tips": "Configure your SSO provider with this callback URL: {{url}}",
-      "provider_fields": "Provider Fields"
+      "provider_fields": "Provider Fields",
+      "generic": {
+        "auth_url": "Authorization URL",
+        "client_id": "Client ID",
+        "client_secret": "Client Secret",
+        "scope": "Scope",
+        "token_url": "Token URL",
+        "user_id_field": "User ID Field",
+        "user_info_url": "User Info URL"
+      },
+      "github": {
+        "client_id": "GitHub Client ID",
+        "client_secret": "GitHub Client Secret"
+      },
+      "provider_fields_description": "Details of the login method you choose"
     },
     "general": {
-      "title": "General"
+      "title": "General",
+      "auto_discovery": "Auto discovery",
+      "auto_discovery_key": "Auto discovery key",
+      "auto_discovery_key_description": "Use automatic discovery to register clients in bulk. Leave blank to disable automatic discovery."
     },
     "site": {
       "name": "Site Name",
@@ -79,7 +96,16 @@
       "backup_restore": "Restore backup",
       "backup_restore_description": "Restoring a backup from a file will overwrite the current data.",
       "private_site": "Private Site",
-      "private_site_description": "Set the site as private. When enabled, data can only be accessed after logging in."
+      "private_site_description": "Set the site as private. When enabled, data can only be accessed after logging in.",
+      "script_domain": "Agent connection address",
+      "script_domain_description": "Define the connection address for the installation script panel, convenient for users with multiple domains, and will not affect access to other domains. Leave empty to use the current domain.",
+      "send_ip_addr_to_guest": "Show partial IP address to guests",
+      "send_ip_addr_to_guest_description": "Under non-logged-in conditions, partial IP address information can be viewed through common:getNodes, in the form of 9.*.*.* / fe80:*:*:*:*:*:*:*. Used for displaying IP in some themes.",
+      "tempory_share": "Temporary Share",
+      "tempory_share_current_link": "Current Temporary Access Link",
+      "tempory_share_description": "After enabling the private site, you can access the site through a temporary share link.",
+      "tempory_share_hours": "Share Duration (Hours)",
+      "tempory_share_revoke": "Revoke Access Permission"
     },
     "geoip": {
       "enable_title": "Enable GeoIP",
@@ -121,7 +147,28 @@
       "smtp_receiver": "Receiver Email",
       "smtp_ssl": "Enable SSL",
       "smtp_tips": "Please test whether the server running Komari can send emails first. You can use '{{command}}' to test.",
-      "provider_fields": "Provider Fields"
+      "provider_fields": "Provider Fields",
+      "Javascript": {
+        "script": "JavaScript code",
+        "script_help": "JavaScript code that implements the sendMessage(message, title) and optional sendEvent(event) functions (partially supports ES6). Both should return a Promise or a boolean value. Available APIs: fetch(), xhr(), console.log(). Guide: https://komari-document.pages.dev/faq/notification-template.html"
+      },
+      "moved": "Looking for expired notifications? Moved to notification-general",
+      "provider_fields_description": "Detailed settings for the information sending channel you choose",
+      "telegram": {
+        "bot_token": "Telegram Bot Token",
+        "chat_id": "Chat ID",
+        "endpoint": "Request Endpoint",
+        "endpoint_help": "Request endpoint for the Telegram Bot API, usually `https://api.telegram.org/bot`"
+      },
+      "template": "Notification template",
+      "template_description": "Komari will send notifications according to the notification template",
+      "email.host": "SMTP Server",
+      "email.password": "Password",
+      "email.port": "Port",
+      "email.receiver": "Receiver Email",
+      "email.sender": "Sender Email",
+      "email.use_ssl": "Enable SSL",
+      "email.username": "Username"
     },
     "record": {
       "title": "Record",
@@ -134,7 +181,22 @@
       "invalid_preserve_time": "Invalid time",
       "expected_usage": "Storing data for one server is estimated to require {{space}} disk space (Ping data depends on the set time interval)"
     },
-    "missing_required_fields": "Please fill in required fields: {{fieldNames}}"
+    "missing_required_fields": "Please fill in required fields: {{fieldNames}}",
+    "api": {
+      "description": "API keys can be used to access and operate all resources, including but not limited to remote control, modification of settings, and account passwords. Please keep them safe. Leaving this field blank will disable the API key function.",
+      "key_length_error": "The API key must be at least 12 characters long",
+      "title": "API key"
+    },
+    "invalid_integer": "Invalid integer",
+    "invalid_number": "Invalid number",
+    "nezha": {
+      "description": "Compatibility options for Nezha, Komari can only handle basic monitoring and cannot use features like delay detection, remote control, NAT, and internal penetration. Entertainment features, no maintenance plans in the future. (NTR enthusiasts)",
+      "enabled": "Enable gRpc Port",
+      "enabled_description": "Enable gRpc port, then Nezha Agent can connect to Komari, and Nezha Agent will automatically register. For startup details, please check the logs.",
+      "listen": "gRpc Listening Address",
+      "listen_description": "Listening gRpc address",
+      "title": "Nezha"
+    }
   },
   "sessions": {
     "title": "Sessions",
@@ -160,6 +222,7 @@
   "current_online": "Current Online",
   "current_time": "Current Time",
   "region_overview": "Region",
+  "asset_overview": "Assets",
   "traffic_overview": "Traffic Overview",
   "network_speed": "Network Speed",
   "status_settings": "Status Settings",
@@ -251,7 +314,11 @@
     "system_info": "System Information",
     "hardware_info": "Hardware Information",
     "network_info": "Network Information",
-    "runtime_info": "Runtime Information"
+    "runtime_info": "Runtime Information",
+    "temperature": "Temperature",
+    "uptime_days": "days",
+    "uptime_hours": "hours",
+    "uptime_minutes": "minutes"
   },
   "login": {
     "title": "Login",
@@ -291,6 +358,11 @@
     "mint": "Mint",
     "sky": "Sky"
   },
+  "modernCard": {
+    "pingStats": "Ping Stats",
+    "latency": "Latency",
+    "loss": "Loss"
+  },
   "chart": {
     "cpu_usage": "CPU Usage",
     "process": "Processes",
@@ -324,7 +396,17 @@
     "clickToShow": "Click to show",
     "clickToHide": "Click to hide",
     "export": "Export Image",
-    "connectNulls": "Connect Nulls"
+    "connectNulls": "Connect Nulls",
+    "avg": "Average",
+    "gpu_memory": "GPU Memory Usage",
+    "interval": "Detection Interval",
+    "latest": "Latest",
+    "max": "Maximum",
+    "min": "Minimum",
+    "total": "Sample Count",
+    "type": "Type",
+    "usage": "Usage",
+    "volatility": "Vol"
   },
   "Task Monitor": "Task Monitor",
   "Ping Tasks": "Ping Tasks",
@@ -415,7 +497,9 @@
       "includeMountpoints": "Specific moutpoints only.",
       "monthRotate": "Month reset for network statistics",
       "autoRenewal": "Auto renewal",
-      "autoRenewalDescription": "If the server expires and is currently online, Komari will automatically set the expiration time to the next natural month (year)"
+      "autoRenewalDescription": "If the server expires and is currently online, Komari will automatically set the expiration time to the next natural month (year)",
+      "billingCycleTips": "<b>Billing Cycle Rules</b><br/> <br/> <b>By Preset Cycle (Calendar Renewal)</b><br/> When the number of days entered is close to the preset plan (such as monthly, quarterly, annually), it will renew according to the corresponding <b>calendar cycle</b>.<br/> - Common values: 30 (monthly), 92 (quarterly), 365 (annually), 730 (biennially), etc.<br/> - Example: Entering 30, the service renews on March 15, and the new expiration date will be April 15.<br/> <br/> <b>By Custom Days</b><br/> When other numbers of days are entered (such as 7, 45, 100), it will strictly renew according to the number of days.<br/> - Example: Entering 45, the service renews on March 15, and the new expiration date will be April 29 (45 days later).<br/> <br/> <b>One-time Payment</b><br/> Entering -1 indicates a one-time payment.",
+      "currencyTips": "¥-RMB,$-Dollar,€-Euro,£-Pound,₽-Ruble,₣-Franc,₹-Rupee,₫-VND,฿-THB"
     },
     "nodeDetail": {
       "machineDetail": "Machine details",
@@ -446,14 +530,28 @@
       "waiting": "wait...",
       "save": "save",
       "saveSuccess": "Save successfully",
-      "saveError": "Saving failed"
+      "saveError": "Saving failed",
+      "hidden": "Hide Node",
+      "hidden_description": "Hide this node when not logged in",
+      "trafficLimit": "Traffic Threshold",
+      "trafficLimit_description": "Used for the homepage traffic progress bar, set to 0 B to disable.",
+      "trafficLimitType": "Traffic Limit Type",
+      "trafficLimitType_down": "Download Only",
+      "trafficLimitType_max": "Max",
+      "trafficLimitType_min": "Min",
+      "trafficLimitType_sum": "Sum",
+      "trafficLimitType_up": "Upload Only"
     },
     "notification": {
       "expire_title": "Expire notification",
       "expire_enable": "Enable Expiration Reminder",
       "expire_enable_description": "If enabled, the system will send reminder notifications before expiration.",
       "expire_time": "Days in Advance to Remind",
-      "expire_time_description": "Set how many days in advance to start sending reminder notifications before expiration."
+      "expire_time_description": "Set how many days in advance to start sending reminder notifications before expiration.",
+      "login": "Login Notification",
+      "login_description": "Send a notification when a new session logs into Komari.",
+      "traffic": "Traffic Usage",
+      "traffic_description": "Komari will send notifications when the server reaches the specified percentage of traffic usage, with reminders at 5% increments. If no traffic threshold is set, no notifications will be sent. Set to 0 to disable traffic reminders."
     }
   },
   "theme": {
@@ -486,7 +584,30 @@
     "delete_warning": "Are you sure you want to delete the theme \"{{themeName}}\"? This action cannot be undone.",
     "author": "Author",
     "version": "Version",
-    "description": "Description"
+    "description": "Description",
+    "default_no_config": "The default theme has no configurable options.",
+    "find_more": "Find more themes?",
+    "github_description": "The system will download the latest release from this GitHub repository.",
+    "github_owner": "GitHub Owner",
+    "github_owner_placeholder": "Enter the GitHub owner/username",
+    "github_repo": "GitHub Repository",
+    "github_repo_placeholder": "Enter the GitHub repository name",
+    "manage": "Theme Management",
+    "manage_with_name": "{{name}} Theme Management",
+    "no_config": "This theme has no declared configuration items.",
+    "theme_link": "Community Maintained Themes",
+    "theme_url": "Theme URL",
+    "update": "Update Theme",
+    "update_description": "If the original theme URL is inaccessible, please upload the theme package to update it.",
+    "update_failed": "Theme update failed",
+    "update_mode": "Update Mode",
+    "update_mode_auto": "Auto (Use Original URL)",
+    "update_mode_auto_description": "The system will automatically use the theme's original URL for updates. If the original URL is a GitHub repository, it will automatically download the latest release package.",
+    "update_mode_github": "GitHub Release",
+    "update_mode_url": "Direct URL",
+    "update_success": "Theme updated successfully",
+    "update_theme": "Update Theme",
+    "uploda_413_content_too_large": "File upload failed (413). Please check and increase the file size limit in your reverse proxy server (such as Nginx/CDN) configuration (client_max_body_size) to ensure that this value is greater than your target file size."
   },
   "copy_success": "Copied!",
   "copy": "Copy",
@@ -559,7 +680,14 @@
     "tags": "Tags",
     "tagsDescription": "Multiple tags separated by ';'",
     "tagsTips": "Multiple tags are separated by \";\". </br>  To specify a color, add &ltcolor&gt to the end of the label, e.g. 1Gbps&ltgreen&gt.</br>  A list of available colors can be found at <label class=\"bg-accent-a5 rounded-sm\"><a href=\"https://www.radix-ui.com/themes/docs/theme/color\" target=\"_blank\"> Color - Radix Themes</a></label>",
-    "private_site": "This is a private Komari site, please log in first."
+    "private_site": "This is a private Komari site, please log in first.",
+    "day": "Day",
+    "empty_error": "Can not be empty",
+    "generate": "Generate",
+    "help": "Help",
+    "home": "Home",
+    "quinquennial": "Quinquennial",
+    "update_available": "New version available"
   },
   "earthView": {
     "allOnline": "All Online",
@@ -593,7 +721,12 @@
     "title": "Latency",
     "target": "Target",
     "interval": "Interval",
-    "type": "Type"
+    "type": "Type",
+    "disk_usage_estimate": "Estimated disk space required",
+    "disk_usage_with_settings": "Based on the {{hour}} hour retention period you set, you'll need {{space}} disk space.",
+    "server_view": "Server View",
+    "task": "Task",
+    "task_view": "Task View"
   },
   "search": {
     "placeholder": "Search nodes by name, region, OS...",
@@ -649,5 +782,42 @@
   },
   "statusBar": {
     "forceShowTrafficText": "Show up/down traffic in Modern view"
-  }
+  },
+  "about": {
+    "ai": "The development process of the Komari project has been assisted by artificial intelligence tools. These tools are used for tasks such as code generation, refactoring, and debugging to improve development efficiency and code quality. All AI-generated code and suggestions have been reviewed and validated by human developers.",
+    "open_source": "Komari is open source under the MIT license and is built using the following open source software:",
+    "open_source_title": "Open Source Software License",
+    "readme_open_in_new_tab": "Open in new tab",
+    "title": "About"
+  },
+  "exec": {
+    "allCompleted": "All tasks executed successfully",
+    "command": "Execute command",
+    "commandPlaceholder": "whoami",
+    "description": "Remotely execute commands on selected nodes",
+    "errors": {
+      "emptyCommand": "The command cannot be empty.",
+      "executionFailed": "Execution failed",
+      "noNodes": "Please select at least one node."
+    },
+    "execute": "Remote Exec",
+    "executing": "Executing",
+    "pollingTimeout": "Task execution timed out",
+    "results": "Execute result",
+    "selectedNodes": "Selected node",
+    "selectNodes": "Select target node",
+    "status": {
+      "failed": "Failed",
+      "running": "Running",
+      "success": "Success",
+      "timeout": "Timeout"
+    },
+    "success": "Command execution completed",
+    "taskStarted": "The task has been initiated.",
+    "title": "Remote Exec"
+  },
+  "Theme": "Theme",
+  "Color": "Color",
+  "Language": "Language",
+  "Settings": "Settings"
 }

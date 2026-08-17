@@ -297,12 +297,7 @@ export class RPC2Client {
         throw wsErr;
       }
       // 2) 回退为 RPC2 的 HTTP POST
-      try {
-        return await this.callViaHTTP(method, params, options);
-      } catch (httpErr) {
-        // 3) 最终失败，抛出上层
-        throw httpErr;
-      }
+      return await this.callViaHTTP(method, params, options);
     }
   }
 

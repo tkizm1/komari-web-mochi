@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, type CSSProperties } from 'react';
 import { Flex, Text, Card, IconButton, Badge } from '@radix-ui/themes';
 import { ChevronDown, ChevronUp, Cpu, MemoryStick, HardDrive, ArrowDownUp, Activity, Gauge } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -15,9 +15,11 @@ interface NodeCompactCardProps {
   basic: NodeBasicInfo;
   live: LiveNodeData | undefined;
   online: boolean;
+  className?: string;
+  style?: CSSProperties;
 }
 
-const NodeCompactCard: React.FC<NodeCompactCardProps> = ({ basic, live, online }) => {
+const NodeCompactCard: React.FC<NodeCompactCardProps> = ({ basic, live, online, className, style }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const isMobile = useIsMobile();
   const { t } = useTranslation();
@@ -83,7 +85,11 @@ const NodeCompactCard: React.FC<NodeCompactCardProps> = ({ basic, live, online }
   } : null;
 
   return (
-    <Card size="2" className={`node-compact-card ${isExpanded ? 'expanded' : ''} ${!online ? 'offline' : ''}`}>
+    <Card
+      size="2"
+      className={`node-compact-card ${isExpanded ? 'expanded' : ''} ${!online ? 'offline' : ''} ${className || ''}`}
+      style={style}
+    >
       <Flex direction="column" gap="3">
         {/* Collapsed View */}
         <div>
@@ -188,8 +194,9 @@ const NodeCompactCard: React.FC<NodeCompactCardProps> = ({ basic, live, online }
         {isExpanded && (
           <div className="expanded-content">
             <div 
-              className="pt-3 border-t border-gray-5"
+              className="pt-3"
               style={{
+                borderTop: '1px solid var(--gray-a5)',
                 display: 'grid',
                 gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
                 gridTemplateRows: isMobile ? 'auto' : 'repeat(2, auto)',
